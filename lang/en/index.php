@@ -99,6 +99,7 @@ return [
     'award_management' => 'Award Management',
     'award_types' => 'Award Types',
     'awards' => 'Awards',
+    'edit_award_types' => 'Edit Award Types',
     'asset_management' => 'Asset Management',
     'asset_types' => 'Asset Types',
     'assets' => 'Assets',

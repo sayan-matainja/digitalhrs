@@ -77,7 +77,7 @@
 
                     $('#awardTypeModalLabel').text(translations.editAwardType);
                     $('#submitButtonText').text(translations.update);
-                    $('#awardTypeForm').attr('action', `{{ url('admin/awards') }}/${awardTypeId}`);
+                    $('#awardTypeForm').attr('action', `{{ url('admin/award-types') }}/${awardTypeId}`);
                     $('#formMethod').val('PUT');
 
 

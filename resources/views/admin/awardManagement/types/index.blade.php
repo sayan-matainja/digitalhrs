@@ -150,7 +150,7 @@
                             @endif
 
                             <div class="mb-4">
-                                <label for="name" class="form-label">{{ __('index.title') }}Title<span style="color: red">*</span></label>
+                                <label for="name" class="form-label">{{ __('index.title') }} <span style="color: red">*</span></label>
                                 <input type="text" class="form-control" id="name"
                                        required
                                        name="title"

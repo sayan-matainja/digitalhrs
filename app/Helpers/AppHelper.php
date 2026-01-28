@@ -977,9 +977,9 @@ class AppHelper
     {
 
         if (self::ifDateInBsEnabled()) {
-          return self::nepToEngDateInYmdFormat($date);
+          return $date ? self::nepToEngDateInYmdFormat($date) : '';
         }
-        return $date;
+        return $date ?: '';
     }
 
     public static function getMonthsList()
