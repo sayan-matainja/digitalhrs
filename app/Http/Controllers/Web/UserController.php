@@ -61,27 +61,41 @@ class UserController extends Controller
     /**
      * @throws AuthorizationException
      */
+
     public function index(Request $request)
     {
         $this->authorize('list_employee');
         try {
-
-
             $filterParameters = [
+                'employee_code' => $request->employee_code ?? null,
                 'employee_name' => $request->employee_name ?? null,
+                'surname' => $request->surname ?? null,
+                'first_name' => $request->first_name ?? null,
+                'middle_name' => $request->middle_name ?? null,
+                'nin' => $request->nin ?? null,
+                'bvn' => $request->bvn ?? null,
+                'dob' => $request->dob ?? null,
                 'email' => $request->email ?? null,
                 'phone' => $request->phone ?? null,
                 'branch_id' => $request->branch_id ?? null,
                 'department_id' => $request->department_id ?? null,
+                'employment_type' => $request->employment_type ?? null,
+                'joining_date' => $request->joining_date ?? null,
+                'post_id' => $request->post_id ?? null,
+                'supervisor_id' => $request->supervisor_id ?? null,
+                'office_time_id' => $request->office_time_id ?? null,
+                'grade_level' => $request->grade_level ?? null,
+                'tax_id' => $request->tax_id ?? null,
+                'sbu_code' => $request->sbu_code ?? null,
+                'rsa_no' => $request->rsa_no ?? null,
+                'hmo_id' => $request->hmo_id ?? null,
             ];
 
             if(!auth('admin')->check() && auth()->check()){
                 $filterParameters['branch_id'] = auth()->user()->branch_id;
             }
 
-
-
-            $with = ['branch:id,name', 'company:id,name', 'post:id,post_name', 'department:id,dept_name', 'role:id,name','officeTime:id,shift,opening_time,closing_time','supervisor:id,name'];
+            $with = ['branch:id,name', 'company:id,name', 'post:id,post_name', 'department:id,dept_name', 'role:id,name','officeTime:id,shift,opening_time,closing_time','supervisor:id,name','accountDetail'];
 
             $select = ['users.*', 'branch_id', 'company_id', 'department_id', 'post_id', 'role_id'];
             $users = $this->userRepo->getAllUsers($filterParameters, $select, $with);
@@ -89,9 +103,8 @@ class UserController extends Controller
             $company = $this->companyRepo->getCompanyDetail(['id']);
             $branches = $this->branchRepository->getLoggedInUserCompanyBranches($company->id, ['id', 'name']);
 
-
             if ($request->input('action') == 'export') {
-                $fileName = 'users.csv';
+                $fileName = 'employees_' . date('Y-m-d_His') . '.csv';
                 return \Maatwebsite\Excel\Facades\Excel::download(new UserExport($users), $fileName);
             }
 
@@ -333,7 +346,8 @@ class UserController extends Controller
                 throw new Exception(__('message.user_not_found'), 404);
             }
 
-            if ($usersDetail->id == auth()->user()->id) {
+            $authUser = auth('admin')->user() ?? auth()->user();
+            if ($usersDetail->id == optional($authUser)->id) {
                 throw new Exception(__('message._delete_own'), 402);
             }
 

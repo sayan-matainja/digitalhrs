@@ -19,10 +19,10 @@ return new class extends Migration
             $table->string('surname', 100)->nullable()->after('name');
             $table->string('first_name', 100)->nullable()->after('surname');
             $table->string('middle_name', 100)->nullable()->after('first_name');
-            
+
             // Personal Details Section - NIN field
             $table->string('nin', 20)->nullable()->after('phone');
-            
+
             // Company Details Section - New fields after post_id
             $table->string('grade_level', 50)->nullable()->after('post_id');
             $table->string('tax_id', 50)->nullable()->after('grade_level');
@@ -47,7 +47,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn([
                 'surname',
-                'first_name', 
+                'first_name',
                 'middle_name',
                 'nin',
                 'grade_level',

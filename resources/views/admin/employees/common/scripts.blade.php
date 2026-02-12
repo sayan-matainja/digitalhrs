@@ -119,37 +119,7 @@
             })
         });
 
-
-
     });
-    $('#export_employee').on('click', function (e) {
-        e.preventDefault();
-        let route = $(this).data('href');
-
-        // Create a form data object with all current filter values
-        let filtered_params = {
-            employee_name: $('#employeeName').val(),
-            email: $('#email').val(),
-            phone: $('#phone').val(),
-            branch_id: $('#branch').val(),
-            department_id: $('#department').val(),
-            action: 'export'  // This should match what the controller is checking for
-        };
-
-        let queryString = $.param(filtered_params);
-        let url = route + '?' + queryString;
-        window.open(url, '_blank');
-    });
-    function getEmployeeFilterParam() {
-        return {
-            employee_name: $('#employeeName').val(),
-            email: $('#email').val(),
-            phone: $('#phone').val(),
-            branch_id: $('#branch').val(),
-            department_id: $('#department').val()
-        };
-    }
-
 
     function capitalize(str) {
         strVal = '';
@@ -219,8 +189,6 @@
 
     });
 
-
-
     // branch wise department, office_time etc
     $(document).ready(function () {
         const loadDepartmentsAndOfficeTime = async () => {
@@ -238,8 +206,8 @@
                     url: `{{ url('admin/transfer/get-user-transfer-branch-data') }}/${selectedBranchId}`,
                 });
 
-                $('#department').empty(); // Changed selector to #department
-                $('#officeTime').empty(); // Added for office time
+                $('#department').empty();
+                $('#officeTime').empty();
 
                 // Departments
                 if (!departmentId) {
@@ -271,7 +239,7 @@
         };
 
         const loadSupervisorAndPosts = async () => {
-            const selectedDepartmentId = $('#department').val(); // Changed selector to #department
+            const selectedDepartmentId = $('#department').val();
             let supervisorId = "{{ isset($userDetail) ? $userDetail['supervisor_id'] : old('supervisor_id') }}";
             let employeeId = "{{ isset($userDetail) ? $userDetail['id'] : ''  }}";
             let postId = "{{ isset($userDetail) ? $userDetail['post_id'] : old('post_id') }}";
@@ -289,8 +257,8 @@
 
                 let data = await response.json();
 
-                $('#supervisor').empty(); // Changed selector to #supervisor
-                $('#post').empty(); // Changed selector to #post
+                $('#supervisor').empty();
+                $('#post').empty();
 
                 // Supervisors
                 if (!supervisorId) {
@@ -300,23 +268,18 @@
                     data.supervisors.forEach(user => {
                         if (employeeId != user.id){
                             $('#supervisor').append(`<option ${user.id == supervisorId ? 'selected' : ''} value="${user.id}">${user.name}</option>`);
-
                         }
                     });
                 } else {
                     $('#supervisor').append('<option disabled>{{ __("index.no_employees_found") }}</option>');
                 }
 
-                // Posts
-                if (!postId) {
-                    $('#post').append('<option value="" selected>{{ __('index.select_option') }}</option>');
-                }
+                // Posts - FIXED: Always show "All Designations"
+                $('#post').append('<option value="">All Designations</option>');
                 if (data.posts && data.posts.length > 0) {
                     data.posts.forEach(post => {
                         $('#post').append(`<option ${post.id == postId ? 'selected' : ''} value="${post.id}">${post.post_name}</option>`);
                     });
-                } else {
-                    $('#post').append('<option disabled>{{ __("index.no_posts_found") }}</option>');
                 }
             } catch (error) {
                 $('#supervisor').append('<option disabled>{{ __("index.error_loading_employees") }}</option>');
@@ -326,7 +289,10 @@
 
         const loadLeaveTypes = async () => {
             const gender = $('#gender').val();
+            const isAdmin = {{ auth('admin')->check() ? 'true' : 'false' }};
+            const defaultBranchId = {{ auth()->user()->branch_id ?? 'null' }};
             const branch = isAdmin ? $('#branch').val() : defaultBranchId;
+
             if (!gender || !branch) {
                 $('#leave-types-table').html('');
                 return;
@@ -396,19 +362,13 @@
                     }
                 });
 
-                // Dispatch event after update (assuming this is needed for listeners)
+                // Dispatch event after update
                 document.dispatchEvent(new CustomEvent('leaveTypesUpdated'));
 
             } catch (error) {
                 console.error('Error fetching leave types:', error);
                 $('#leave-types-table').html('<tr><td colspan="3">{{ __("index.error_loading_leave_types") }}</td></tr>');
             }
-        };
-
-        // Capitalize helper used in leave types
-        const capitalize = (str) => {
-            if (!str) return '';
-            return str.charAt(0).toUpperCase() + str.slice(1);
         };
 
         const isAdmin = {{ auth('admin')->check() ? 'true' : 'false' }};
@@ -428,7 +388,6 @@
 
         document.addEventListener('leaveTypesUpdated', attachEventListeners);
 
-
         const leaveForm = document.getElementById('employeeDetail');
         const leaveAllocatedInput = document.getElementById('leave_allocated');
         let leaveDaysInputs = document.querySelectorAll('.leave-days');
@@ -436,17 +395,12 @@
         const errorMessage = document.getElementById('error-message');
 
         // Disable HTML5 validation to let JavaScript handle it
-        leaveForm.setAttribute('novalidate', true);
-
-        // Check if required elements exist
-        if (!leaveForm || !leaveAllocatedInput || !errorMessage || !leaveDaysInputs.length) {
-            console.error('Required form elements are missing.');
-            return;
+        if (leaveForm) {
+            leaveForm.setAttribute('novalidate', true);
         }
 
         function displayError(element, message) {
             if (!element) return;
-            console.log('Displaying error for element:', element, 'Message:', message); // Debug
             element.classList.add('text-danger');
             element.textContent = message;
             element.style.display = 'block';
@@ -454,7 +408,6 @@
 
         function hideError(element) {
             if (!element) return;
-            console.log('Hiding error for element:', element); // Debug
             element.classList.remove('text-danger');
             element.textContent = '';
             element.style.display = 'none';
@@ -472,12 +425,11 @@
 
             // Check if allocated leave is less than total leave days
             const allocatedValue = parseInt(leaveAllocatedInput.value) || 0;
-            console.log('Validating: Total Days:', totalDays, 'Allocated:', allocatedValue); // Debug
             if (allocatedValue < totalDays) {
                 displayError(errorMessage, 'Allocated leave cannot be less than the total leave days.');
                 leaveAllocatedInput.classList.add('text-danger');
                 isValid = false;
-            }else if(allocatedValue > totalDays){
+            } else if(allocatedValue > totalDays){
                 displayError(errorMessage, 'Allocated leave cannot be more than the total leave days.');
                 leaveAllocatedInput.classList.add('text-danger');
                 isValid = false;
@@ -495,7 +447,6 @@
                     displayError(errorElement, 'This field is required when leave is allocated.');
                     input.classList.add('text-danger');
                     input.classList.remove('is-valid');
-                    console.log('Invalid input:', input); // Debug
                     isValid = false;
                 } else {
                     hideError(errorElement);
@@ -506,7 +457,6 @@
 
             if (!isValid && event) {
                 event.preventDefault();
-                console.log('Form submission prevented, isValid:', isValid); // Debug
             }
 
             return isValid;
@@ -514,13 +464,10 @@
 
         function setRequiredAttribute() {
             const allocatedValue = parseInt(leaveAllocatedInput.value) || 0;
-            console.log('setRequiredAttribute called, Allocated Value:', allocatedValue); // Debug
             leaveDaysInputs.forEach((input, index) => {
                 const value = input.value.trim();
                 const errorElement = input.nextElementSibling;
-                const isActiveCheckbox = isActiveCheckboxes[index];
 
-                console.log(`Checking input ${index}: Value: ${value}, Allocated: ${allocatedValue}`); // Debug
                 if (allocatedValue > 0 && !value) {
                     displayError(errorElement, 'This field is required when leave is allocated.');
                     input.classList.add('text-danger');
@@ -537,11 +484,9 @@
         function attachEventListeners() {
             leaveDaysInputs = document.querySelectorAll('.leave-days');
             isActiveCheckboxes = document.querySelectorAll('.is-active-checkbox');
-            console.log('Attaching event listeners to', leaveDaysInputs.length, 'inputs'); // Debug
 
             leaveDaysInputs.forEach((input, index) => {
                 input.addEventListener('input', function () {
-                    console.log('Input changed:', input.value); // Debug
                     const isActiveCheckbox = isActiveCheckboxes[index];
                     if (!input.value.trim()) {
                         isActiveCheckbox.checked = false;
@@ -552,24 +497,25 @@
 
             isActiveCheckboxes.forEach((checkbox, index) => {
                 checkbox.addEventListener('change', function () {
-                    console.log('Checkbox changed:', checkbox.checked); // Debug
                     setRequiredAttribute();
                 });
             });
         }
 
         // Initial event listeners
-        leaveAllocatedInput.addEventListener('input', setRequiredAttribute);
-        leaveForm.addEventListener('submit', validateForm);
+        if (leaveAllocatedInput) {
+            leaveAllocatedInput.addEventListener('input', setRequiredAttribute);
+        }
+        if (leaveForm) {
+            leaveForm.addEventListener('submit', validateForm);
+        }
         attachEventListeners();
 
         // Initial validation
         setRequiredAttribute();
     });
 
-
-
-@if(\App\Helpers\AppHelper::ifDateInBsEnabled())
+    @if(\App\Helpers\AppHelper::ifDateInBsEnabled())
     $('.joiningDate').nepaliDatePicker({
         language: "english",
         dateFormat: "YYYY-MM-DD",

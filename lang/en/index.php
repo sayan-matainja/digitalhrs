@@ -238,7 +238,7 @@ return [
     'all_fields_required' => 'All (<span style="color: red">*</span>) fields are required',
     'personal_detail' => 'Personal Detail',
     'employee_code' => 'Employee ID',
-    
+
     'employee_id' => 'Employee ID',
     'surname' => 'Surname',
     'first_name' => 'First Name',
@@ -1108,7 +1108,7 @@ return [
     'group' => 'Group',
     'export_table_data' => 'Export Table Data',
     'leave_requests' => 'Leave Requests',
-    'employee_lists' => 'Employee Lists',
+    'employee_lists' => 'Employee Data Filter',
     'attendances' => 'Attendances',
     'confirm_change_status' => 'Are you sure you want to change status?',
     'yes' => 'Yes',

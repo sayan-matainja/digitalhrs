@@ -30,27 +30,80 @@ class UserRepository
 
     public function getAllUsers($filterParameters, $select = ['*'], $with = [])
     {
-
-        $userList =  User::with($with)
-            ->select($select)
-            ->when(isset($filterParameters['employee_name']), function ($query) use ($filterParameters) {
-                $query->where('name', 'like', '%' . $filterParameters['employee_name'] . '%');
-            })
-            ->when(isset($filterParameters['email']), function ($query) use ($filterParameters) {
-                $query->where('email', 'like', '%' . $filterParameters['email'] . '%');
-            })
-            ->when(isset($filterParameters['phone']), function ($query) use ($filterParameters) {
-                $query->where('phone', $filterParameters['phone']);
-            })
-            ->when(isset($filterParameters['branch_id']), function ($query) use ($filterParameters) {
-                $query->where('branch_id', $filterParameters['branch_id']);
-            })
-            ->when(isset($filterParameters['department_id']), function ($query) use ($filterParameters) {
-                $query->where('department_id', $filterParameters['department_id']);
+    $userList = User::with($with)
+        ->select($select)
+        ->when(!empty($filterParameters['employee_code']), function ($query) use ($filterParameters) {
+            $query->where('employee_code', 'like', '%' . $filterParameters['employee_code'] . '%');
+        })
+        ->when(!empty($filterParameters['employee_name']), function ($query) use ($filterParameters) {
+            $query->where('name', 'like', '%' . $filterParameters['employee_name'] . '%');
+        })
+        ->when(!empty($filterParameters['surname']), function ($query) use ($filterParameters) {
+            $query->where('surname', 'like', '%' . $filterParameters['surname'] . '%');
+        })
+        ->when(!empty($filterParameters['first_name']), function ($query) use ($filterParameters) {
+            $query->where('first_name', 'like', '%' . $filterParameters['first_name'] . '%');
+        })
+        ->when(!empty($filterParameters['middle_name']), function ($query) use ($filterParameters) {
+            $query->where('middle_name', 'like', '%' . $filterParameters['middle_name'] . '%');
+        })
+        ->when(!empty($filterParameters['email']), function ($query) use ($filterParameters) {
+            $query->where('email', 'like', '%' . $filterParameters['email'] . '%');
+        })
+        ->when(!empty($filterParameters['phone']), function ($query) use ($filterParameters) {
+            $query->where('phone', $filterParameters['phone']);
+        })
+        ->when(!empty($filterParameters['nin']), function ($query) use ($filterParameters) {
+            $query->where('nin', 'like', '%' . $filterParameters['nin'] . '%');
+        })
+        ->when(!empty($filterParameters['dob']), function ($query) use ($filterParameters) {
+            $query->whereDate('dob', $filterParameters['dob']);
+        })
+        ->when(!empty($filterParameters['employment_type']), function ($query) use ($filterParameters) {
+            $query->where('employment_type', $filterParameters['employment_type']);
+        })
+        ->when(!empty($filterParameters['joining_date']), function ($query) use ($filterParameters) {
+            $query->whereDate('joining_date', $filterParameters['joining_date']);
+        })
+        ->when(!empty($filterParameters['grade_level']), function ($query) use ($filterParameters) {
+            $query->where('grade_level', 'like', '%' . $filterParameters['grade_level'] . '%');
+        })
+        ->when(!empty($filterParameters['tax_id']), function ($query) use ($filterParameters) {
+            $query->where('tax_id', 'like', '%' . $filterParameters['tax_id'] . '%');
+        })
+        ->when(!empty($filterParameters['sbu_code']), function ($query) use ($filterParameters) {
+            $query->where('sbu_code', 'like', '%' . $filterParameters['sbu_code'] . '%');
+        })
+        ->when(!empty($filterParameters['rsa_no']), function ($query) use ($filterParameters) {
+            $query->where('rsa_no', 'like', '%' . $filterParameters['rsa_no'] . '%');
+        })
+        ->when(!empty($filterParameters['hmo_id']), function ($query) use ($filterParameters) {
+            $query->where('hmo_id', 'like', '%' . $filterParameters['hmo_id'] . '%');
+        })
+        ->when(!empty($filterParameters['supervisor_id']), function ($query) use ($filterParameters) {
+            $query->where('supervisor_id', $filterParameters['supervisor_id']);
+        })
+        ->when(!empty($filterParameters['office_time_id']), function ($query) use ($filterParameters) {
+            $query->where('office_time_id', $filterParameters['office_time_id']);
+        })
+        ->when(!empty($filterParameters['branch_id']), function ($query) use ($filterParameters) {
+            $query->where('branch_id', $filterParameters['branch_id']);
+        })
+        ->when(!empty($filterParameters['department_id']), function ($query) use ($filterParameters) {
+            $query->where('department_id', $filterParameters['department_id']);
+        })
+        ->when(!empty($filterParameters['post_id']), function ($query) use ($filterParameters) {
+            $query->where('post_id', $filterParameters['post_id']);
+        })
+        ->when(!empty($filterParameters['bvn']), function ($query) use ($filterParameters) {
+            $query->whereHas('accountDetail', function ($q) use ($filterParameters) {
+                $q->where('bvn', 'like', '%' . $filterParameters['bvn'] . '%');
             });
-            return $userList->orderBy('users.name')
-            ->latest()
-            ->paginate( getRecordPerPage());
+        });
+
+    return $userList->orderBy('users.name')
+        ->latest()
+        ->paginate(getRecordPerPage());
     }
 
     public function getAllCompanyUsers($select = ['*'],$with=[])
