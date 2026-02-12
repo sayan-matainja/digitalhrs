@@ -22,22 +22,42 @@
             <h5 class="mb-3 border-bottom pb-3">{{ __('index.personal_detail') }}</h5>
             <div class="row">
                 <div class="col-lg-4 col-md-6 mb-3">
-                    <label for="employee_code" class="form-label">{{ __('index.employee_code') }} </label>
+                    <label for="employee_code" class="form-label">{{ __('index.employee_id') }}</label>
                     <input type="text" class="form-control"
                            id="employee_code"
                            name="employee_code"
                            readonly
                            style="pointer-events: none;"
                            value="{{ ( isset($userDetail) ? $userDetail->employee_code: $employeeCode )}}" autocomplete="off"
-                           placeholder="{{ __('index.employee_code') }}" required>
+                           placeholder="{{ __('index.employee_id') }}" required>
                 </div>
+
+                <!-- UPDATED: Split Name into 3 fields -->
                 <div class="col-lg-4 col-md-6 mb-3">
-                    <label for="name" class="form-label"> {{ __('index.name') }} <span style="color: red">*</span></label>
+                    <label for="surname" class="form-label">{{ __('index.surname') }} <span style="color: red">*</span></label>
                     <input type="text" class="form-control"
-                           id="name"
-                           name="name"
-                           value="{{ ( isset($userDetail) ? $userDetail->name: old('name') )}}" autocomplete="off"
-                           placeholder="{{ __('index.enter_name') }}" required>
+                           id="surname"
+                           name="surname"
+                           value="{{ ( isset($userDetail) ? $userDetail->surname: old('surname') )}}" autocomplete="off"
+                           placeholder="{{ __('index.enter_surname') }}" required>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label for="first_name" class="form-label">{{ __('index.first_name') }} <span style="color: red">*</span></label>
+                    <input type="text" class="form-control"
+                           id="first_name"
+                           name="first_name"
+                           value="{{ ( isset($userDetail) ? $userDetail->first_name: old('first_name') )}}" autocomplete="off"
+                           placeholder="{{ __('index.enter_first_name') }}" required>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label for="middle_name" class="form-label">{{ __('index.middle_name') }}</label>
+                    <input type="text" class="form-control"
+                           id="middle_name"
+                           name="middle_name"
+                           value="{{ ( isset($userDetail) ? $userDetail->middle_name: old('middle_name') )}}" autocomplete="off"
+                           placeholder="{{ __('index.enter_middle_name') }}">
                 </div>
 
                 <div class="col-lg-4 col-md-6 mb-3">
@@ -107,6 +127,12 @@
                     </select>
                 </div>
 
+                <!-- NIN Field -->
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label for="nin" class="form-label"> {{ __('index.nin') }} <span style="color: red">*</span>
+                    </label>
+                    <input type="number" class="form-control" id="nin" name="nin" value="{{ isset($userDetail) ? $userDetail->nin : old('nin') }}" placeholder="{{ __('index.nin') }}" required>
+                </div>
 
                 <div class="col-lg-4 mb-3">
                     <label for="avatar" class="form-label">{{ __('index.upload_avatar') }} <span style="color: red">*</span> </label>
@@ -125,6 +151,7 @@
                          height="100"
                     >
                 </div>
+
                 <div class="col-lg-12">
                     <div class="row">
                         <div class="col-lg-6 mb-3 empl-desc">
@@ -214,7 +241,7 @@
                                 </option>
                             @endforeach
                         @else
-                            <option selected disabled>{{ __('index.select_post') }}</option>
+                            <option selected disabled>{{ __('index.select_designation') }}</option>
                         @endif
                     </select>
                 </div>
@@ -251,6 +278,7 @@
                         @endforeach
                     </select>
                 </div>
+
                 <div class="col-lg-4 col-md-6 mb-3">
                     <label for="officeTime" class="form-label">{{ __('index.office_time') }}</label>
                     <select class="form-select" id="officeTime" name="office_time_id">
@@ -291,6 +319,43 @@
 
                     </select>
                 </div>
+
+                <!-- NEW FIELDS: Grade Level, Tax ID, SBU Code, RSA No, HMO ID -->
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label for="grade_level" class="form-label">{{ __('index.grade_level') }}</label>
+                    <input type="text" class="form-control" id="grade_level" name="grade_level"
+                           value="{{ isset($userDetail) ? $userDetail->grade_level : old('grade_level') }}"
+                           autocomplete="off" placeholder="{{ __('index.enter_grade_level') }}">
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label for="tax_id" class="form-label">{{ __('index.tax_id') }}</label>
+                    <input type="text" class="form-control" id="tax_id" name="tax_id"
+                           value="{{ isset($userDetail) ? $userDetail->tax_id : old('tax_id') }}"
+                           autocomplete="off" placeholder="{{ __('index.enter_tax_id') }}">
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label for="sbu_code" class="form-label">{{ __('index.sbu_code') }}</label>
+                    <input type="text" class="form-control" id="sbu_code" name="sbu_code"
+                           value="{{ isset($userDetail) ? $userDetail->sbu_code : old('sbu_code') }}"
+                           autocomplete="off" placeholder="{{ __('index.enter_sbu_code') }}">
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label for="rsa_no" class="form-label">{{ __('index.rsa_no') }}</label>
+                    <input type="text" class="form-control" id="rsa_no" name="rsa_no"
+                           value="{{ isset($userDetail) ? $userDetail->rsa_no : old('rsa_no') }}"
+                           autocomplete="off" placeholder="{{ __('index.enter_rsa_no') }}">
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label for="hmo_id" class="form-label">{{ __('index.hmo_id') }}</label>
+                    <input type="text" class="form-control" id="hmo_id" name="hmo_id"
+                           value="{{ isset($userDetail) ? $userDetail->hmo_id : old('hmo_id') }}"
+                           autocomplete="off" placeholder="{{ __('index.enter_hmo_id') }}">
+                </div>
+
                 <div class="col-lg-4 col-md-6 mt-5">
                     <input type="checkbox" name="allow_holiday_check_in" id="allow_holiday_check_in" {{ isset($userDetail) && ($userDetail->allow_holiday_check_in == 1) ? 'checked': '' }}>
                     {{ __('index.allow_holiday_check_in') }}
@@ -410,6 +475,16 @@
                                         {{ucfirst($value)}}</option>
                                 @endforeach
                             </select>
+                        </div>
+
+                        <!-- BVN Field -->
+                        <div class="col-lg-6 col-md-6 mb-4">
+                            <label for="bvn" class="form-label"> {{ __('index.bvn') }} <span style="color: red">*</span></label>
+                            <input type="text" class="form-control" id="bvn" name="bvn"
+                                   value="{{ isset($userDetail?->accountDetail) ? $userDetail?->accountDetail?->bvn : old('bvn') }}"
+                                   placeholder="{{ __('index.bvn') }}"
+                                   maxlength="11"
+                                   required>
                         </div>
 
                     </div>

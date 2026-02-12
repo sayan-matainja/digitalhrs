@@ -237,7 +237,29 @@ return [
     'force_logout' => 'Force Log Out',
     'all_fields_required' => 'All (<span style="color: red">*</span>) fields are required',
     'personal_detail' => 'Personal Detail',
-    'employee_code' => 'Employee Code',
+    'employee_code' => 'Employee ID',
+    
+    'employee_id' => 'Employee ID',
+    'surname' => 'Surname',
+    'first_name' => 'First Name',
+    'middle_name' => 'Middle Name',
+    'enter_surname' => 'Enter Surname',
+    'enter_first_name' => 'Enter First Name',
+    'enter_middle_name' => 'Enter Middle Name',
+
+    // Find the company details section and add:
+    'grade_level' => 'Grade Level',
+    'tax_id' => 'Tax ID',
+    'sbu_code' => 'SBU Code',
+    'rsa_no' => 'RSA No',
+    'hmo_id' => 'HMO ID',
+    'enter_grade_level' => 'Enter Grade Level',
+    'enter_tax_id' => 'Enter Tax ID',
+    'enter_sbu_code' => 'Enter SBU Code',
+    'enter_rsa_no' => 'Enter RSA No',
+    'enter_hmo_id' => 'Enter HMO ID',
+
+
     'enter_name'=>'Enter name',
     'enter_employee_address'=>'Enter Employee Address',
     'enter_email'=>'Enter email',
@@ -257,7 +279,7 @@ return [
     'supervisor' => 'Supervisor',
     'employment_type' => 'Employment Type',
     'select_employment_type' => 'Select Employment Type',
-    'joining_date' => 'Joining Date',
+    'joining_date' => 'Employment Date',
     'enter_joining_date' => 'Enter Joining Date',
     'workspace' => 'WorkSpace',
     'select_workspace' => 'Select Work Place',
@@ -307,6 +329,9 @@ return [
     'account_type' => 'Account Type',
     'account_holder' => 'Account Holder',
     'not_available' => 'N/A',
+    'nin' => 'NIN',
+    'bvn' => 'BVN',
+
 
     /** logout requests */
     'logout_request_status' => 'Logout Request Status',
@@ -1359,6 +1384,7 @@ return [
     'select_post' => 'Select Post',
     'old_post' => 'Old Post',
     'new_post' => 'New Post',
+    'select_designation' => 'Select Designation',
 
 
     /** Transfer Management */

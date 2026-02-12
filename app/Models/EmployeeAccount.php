@@ -25,6 +25,7 @@ class EmployeeAccount extends Model
         'bank_name',
         'bank_account_no',
         'bank_account_type',
+        'bvn',
         'salary',
         'salary_cycle',
         'salary_group_id',

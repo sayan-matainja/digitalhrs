@@ -54,6 +54,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'surname',           // ADD THIS
+        'first_name',        // ADD THIS
+        'middle_name',       // ADD THIS
         'email',
         'username',
         'password',
@@ -61,6 +64,7 @@ class User extends Authenticatable
         'dob',
         'gender',
         'marital_status',
+        'nin',
         'phone',
         'status',
         'is_active',
@@ -80,6 +84,11 @@ class User extends Authenticatable
         'branch_id',
         'department_id',
         'post_id',
+        'grade_level',       // ADD THIS
+        'tax_id',            // ADD THIS
+        'sbu_code',          // ADD THIS
+        'rsa_no',            // ADD THIS
+        'hmo_id',            // ADD THIS
         'role_id',
         'supervisor_id',
         'office_time_id',

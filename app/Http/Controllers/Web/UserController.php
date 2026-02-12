@@ -132,6 +132,14 @@ class UserController extends Controller
         try {
             $validatedData = $request->validated();
 
+            // Create full name from surname, first_name, middle_name
+            $nameParts = array_filter([
+                $validatedData['surname'] ?? '',
+                $validatedData['first_name'] ?? '',
+                $validatedData['middle_name'] ?? ''
+            ]);
+            $validatedData['name'] = implode(' ', $nameParts);
+
             $accountValidatedData = $accountRequest->validated();
             $leaveTypeData = $leaveRequest->validated();
 
@@ -248,6 +256,13 @@ class UserController extends Controller
             if (!$userDetail) {
                 throw new Exception(__('message.user_not_found'), 404);
             }
+            // Create full name from surname, first_name, middle_name
+            $nameParts = array_filter([
+                $validatedData['surname'] ?? '',
+                $validatedData['first_name'] ?? '',
+                $validatedData['middle_name'] ?? ''
+            ]);
+            $validatedData['name'] = implode(' ', $nameParts);
             $validatedData['allow_holiday_check_in'] = isset($validatedData['allow_holiday_check_in']) ? 1 : 0;
             DB::beginTransaction();
             $this->userRepo->update($userDetail, $validatedData);
