@@ -21,6 +21,11 @@ class SalaryTDSService
         return $this->salaryTDSRepo->getAllSalaryTDSDetail($select)->groupBy('marital_status');;
     }
 
+    public function getAllSalaryTDSList($select = ['*'])
+    {
+        return $this->salaryTDSRepo->getAllSalaryTDSDetail($select);
+    }
+
     public function store($validatedData)
     {
         try{
@@ -32,7 +37,8 @@ class SalaryTDSService
                     'annual_salary_from' => $validatedData['annual_salary_from'][$i],
                     'annual_salary_to' => $validatedData['annual_salary_to'][$i],
                     'tds_in_percent' => $validatedData['tds_in_percent'][$i],
-                    'marital_status' => $validatedData['marital_status'],
+                    // 'marital_status' => $validatedData['marital_status'],
+                    'marital_status' => $validatedData['marital_status'] ?? null,
                     'created_by' => $createdBy,
                 ];
             }

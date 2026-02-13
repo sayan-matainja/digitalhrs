@@ -43,20 +43,19 @@ class UserController extends Controller
     private $view = 'admin.employees.';
 
 
-    public function __construct(protected UserRepository              $userRepo,
-                                protected CompanyRepository           $companyRepo,
-                                protected RoleRepository              $roleRepo,
-                                protected OfficeTimeRepository        $officeTimeRepo,
-                                protected UserAccountRepository       $accountRepo,
-                                protected BranchRepository            $branchRepository,
-                                protected LeaveTypeRepository         $leaveTypeRepository,
-                                protected EmployeeLeaveTypeRepository $employeeLeaveTypeRepository,
-                                protected PostRepository $postRepository,
-                                protected EmployeeCardSettingService $cardTemplateService
+    public function __construct(
+        protected UserRepository              $userRepo,
+        protected CompanyRepository           $companyRepo,
+        protected RoleRepository              $roleRepo,
+        protected OfficeTimeRepository        $officeTimeRepo,
+        protected UserAccountRepository       $accountRepo,
+        protected BranchRepository            $branchRepository,
+        protected LeaveTypeRepository         $leaveTypeRepository,
+        protected EmployeeLeaveTypeRepository $employeeLeaveTypeRepository,
+        protected PostRepository $postRepository,
+        protected EmployeeCardSettingService $cardTemplateService
 
-    )
-    {
-    }
+    ) {}
 
     /**
      * @throws AuthorizationException
@@ -67,35 +66,20 @@ class UserController extends Controller
         $this->authorize('list_employee');
         try {
             $filterParameters = [
-                'employee_code' => $request->employee_code ?? null,
-                'employee_name' => $request->employee_name ?? null,
-                'surname' => $request->surname ?? null,
-                'first_name' => $request->first_name ?? null,
-                'middle_name' => $request->middle_name ?? null,
-                'nin' => $request->nin ?? null,
-                'bvn' => $request->bvn ?? null,
-                'dob' => $request->dob ?? null,
-                'email' => $request->email ?? null,
-                'phone' => $request->phone ?? null,
-                'branch_id' => $request->branch_id ?? null,
-                'department_id' => $request->department_id ?? null,
+                'employee_code'   => $request->employee_code ?? null,
+                'branch_id'       => $request->branch_id ?? null,
+                'department_id'   => $request->department_id ?? null,
+                'office_time_id'  => $request->office_time_id ?? null,
                 'employment_type' => $request->employment_type ?? null,
-                'joining_date' => $request->joining_date ?? null,
-                'post_id' => $request->post_id ?? null,
-                'supervisor_id' => $request->supervisor_id ?? null,
-                'office_time_id' => $request->office_time_id ?? null,
-                'grade_level' => $request->grade_level ?? null,
-                'tax_id' => $request->tax_id ?? null,
-                'sbu_code' => $request->sbu_code ?? null,
-                'rsa_no' => $request->rsa_no ?? null,
-                'hmo_id' => $request->hmo_id ?? null,
+                'post_id'         => $request->post_id ?? null,
+                'supervisor_id'   => $request->supervisor_id ?? null,
             ];
 
-            if(!auth('admin')->check() && auth()->check()){
+            if (!auth('admin')->check() && auth()->check()) {
                 $filterParameters['branch_id'] = auth()->user()->branch_id;
             }
 
-            $with = ['branch:id,name', 'company:id,name', 'post:id,post_name', 'department:id,dept_name', 'role:id,name','officeTime:id,shift,opening_time,closing_time','supervisor:id,name','accountDetail'];
+            $with = ['branch:id,name', 'company:id,name', 'post:id,post_name', 'department:id,dept_name', 'role:id,name', 'officeTime:id,shift,opening_time,closing_time', 'supervisor:id,name', 'accountDetail'];
 
             $select = ['users.*', 'branch_id', 'company_id', 'department_id', 'post_id', 'role_id'];
             $users = $this->userRepo->getAllUsers($filterParameters, $select, $with);
@@ -175,7 +159,6 @@ class UserController extends Controller
                     $input['leave_type_id'] = $value;
 
                     $this->employeeLeaveTypeRepository->store($input);
-
                 }
             }
 
@@ -228,7 +211,7 @@ class UserController extends Controller
             $userSelect = ['*'];
             $userWith = ['accountDetail'];
             $userDetail = $this->userRepo->findUserDetailById($id, $userSelect, $userWith);
-            $leaveTypes = $this->leaveTypeRepository->getGenderSpecificPaidLeaveTypes($userDetail->branch_id,$userDetail->gender);
+            $leaveTypes = $this->leaveTypeRepository->getGenderSpecificPaidLeaveTypes($userDetail->branch_id, $userDetail->gender);
             $employeeLeaveTypes = $this->employeeLeaveTypeRepository->getAll(['id', 'leave_type_id', 'days', 'is_active'], $id);
             $bsEnabled = AppHelper::ifDateInBsEnabled();
 
@@ -237,10 +220,10 @@ class UserController extends Controller
                 : [];
 
             $filteredSupervisor = isset($userDetail->department_id)
-                ? $this->userRepo->getAllActiveEmployeeByDepartment($userDetail->department_id, ['id','name'])
+                ? $this->userRepo->getAllActiveEmployeeByDepartment($userDetail->department_id, ['id', 'name'])
                 : [];
 
-            return view($this->view . 'edit', compact('companyDetail', 'roles', 'userDetail', 'leaveTypes', 'employeeLeaveTypes', 'bsEnabled','filteredSupervisor','filteredPosts'));
+            return view($this->view . 'edit', compact('companyDetail', 'roles', 'userDetail', 'leaveTypes', 'employeeLeaveTypes', 'bsEnabled', 'filteredSupervisor', 'filteredPosts'));
         } catch (Exception $exception) {
 
             return redirect()->back()->with('danger', $exception->getFile());
@@ -433,7 +416,6 @@ class UserController extends Controller
             $this->userRepo->changePassword($userDetail, $validatedData['new_password']);
             DB::commit();
             return redirect()->back()->with('success', __('message.user_password_change'));
-
         } catch (Exception $exception) {
             return redirect()->back()->with('danger', $exception->getMessage());
         }
@@ -545,16 +527,14 @@ class UserController extends Controller
     {
         try {
 
-            $users = $this->userRepo->getAllBranchUsers($branchId, ['id','name']);
+            $users = $this->userRepo->getAllBranchUsers($branchId, ['id', 'name']);
 
             return response()->json([
                 'users' => $users,
             ]);
-
         } catch (Exception $exception) {
-            return AppHelper::sendErrorResponse($exception->getMessage(),$exception->getCode());
+            return AppHelper::sendErrorResponse($exception->getMessage(), $exception->getCode());
         }
-
     }
 
     public function toggleHolidayCheckIn($id)
@@ -586,7 +566,7 @@ class UserController extends Controller
                 'branch_id' => $request->branch_id ?? null,
                 'department_id' => $request->department_id ?? null,
                 'employee_id' => $request->employee_id ?? null,
-                'date' =>  $request->date ?? ( $bsEnabled ? AppHelper::getCurrentDateInBS()  : date('Y-m-d')),
+                'date' =>  $request->date ?? ($bsEnabled ? AppHelper::getCurrentDateInBS()  : date('Y-m-d')),
             ];
 
             if (!auth('admin')->check() && auth()->check()) {
@@ -600,7 +580,7 @@ class UserController extends Controller
             $select = ['id', 'name'];
             $companyDetail = $this->companyRepo->getCompanyDetail($select, $with);
 
-            return view($this->view . 'log', compact('logData', 'companyDetail', 'filterData','bsEnabled'));
+            return view($this->view . 'log', compact('logData', 'companyDetail', 'filterData', 'bsEnabled'));
         } catch (Exception $exception) {
             return redirect()->back()->with('danger', $exception->getMessage());
         }

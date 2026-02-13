@@ -31,16 +31,9 @@
                             @method('PUT')
                             @csrf
                             <div class="row align-items-center justify-content-between mb-3">
-                                <div class="col-lg-3 ">
-                                    <select class="form-select" id="marital_status" name="marital_status" required >
-                                        <option value="" {{old('marital_status') ? '' : 'selected'}}  disabled>{{ __('index.select_marital_status') }} </option>
-                                        @foreach(\App\Models\SalaryTDS::MARITAL_STATUS as  $value)
-                                            <option value="{{$value}}" {{  ($salaryTDSDetail->marital_status == $value) ? 'selected': '' }}>  {{ucfirst($value)}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                {{-- Marital Status dropdown removed --}}
 
-                                <div class="col-lg-3">
+                                <div class="col-lg-4">
                                     <input type="number"
                                            class="form-control"
                                            id="annual_salary_from"
@@ -50,7 +43,7 @@
                                            placeholder="{{ __('index.enter_annual_salary_from') }}">
                                 </div>
 
-                                <div class="col-lg-3">
+                                <div class="col-lg-4">
                                     <input type="number"
                                            class="form-control"
                                            id="annual_salary_to"
@@ -60,7 +53,7 @@
                                            placeholder="{{ __('index.enter_annual_salary_to') }}">
                                 </div>
 
-                                <div class="col-lg-3">
+                                <div class="col-lg-4">
                                     <input type="number"
                                            class="form-control"
                                            id="tds_in_percent"

@@ -20,7 +20,8 @@
                 </a>
             </li>
         @endcan
-        @can('ssf')
+        {{-- hidden --}}
+        {{-- @can('ssf')
             <li class="nav-item {{request()->routeIs('admin.ssf.*') ? 'bg-danger' : '' }} w-100"
                 style="border-bottom: 1px solid #ede7e7;">
                 <a class="nav-link {{request()->routeIs('admin.ssf.*') ? 'text-white' : 'text-black' }}"
@@ -28,7 +29,7 @@
                     {{ __('index.ssf') }}
                 </a>
             </li>
-        @endcan
+        @endcan --}}
          @can('pf')
             <li class="nav-item {{request()->routeIs('admin.pf.*') ? 'bg-danger' : '' }} w-100"
                 style="border-bottom: 1px solid #ede7e7;">

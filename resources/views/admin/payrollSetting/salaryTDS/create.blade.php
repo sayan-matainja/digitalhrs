@@ -41,14 +41,15 @@
                     <div class="card-body">
                         <form id="salaryTDSAdd" class="forms-sample" action="{{route('admin.salary-tds.store')}}"  method="POST">
                             @csrf
-                            <div class="col-lg-3 mb-4">
+                            {{-- removed --}}
+                            {{-- <div class="col-lg-3 mb-4">
                                 <select class="form-select" id="marital_status" name="marital_status" required >
                                     <option value="" {{old('marital_status') ? '' : 'selected'}}  disabled>{{ __('index.select_marital_status') }} </option>
                                     @foreach(\App\Models\SalaryTDS::MARITAL_STATUS as  $value)
                                         <option value="{{$value}}" {{  (old('marital_status') == $value) ? 'selected': '' }}>  {{ucfirst($value)}}</option>
                                     @endforeach
                                 </select>
-                            </div>
+                            </div> --}}
                             <div id="addSalaryTDS">
                                 <div class="row salaryTDSList align-items-center justify-content-between mb-3">
                                     <div class="col-lg-3">

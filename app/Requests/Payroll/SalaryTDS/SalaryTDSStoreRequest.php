@@ -18,7 +18,8 @@ class SalaryTDSStoreRequest extends FormRequest
     public function rules()
     {
         $rules =  [
-            'marital_status' => ['required',Rule::in(SalaryTDS::MARITAL_STATUS)],
+            // 'marital_status' => ['required',Rule::in(SalaryTDS::MARITAL_STATUS)],
+            'marital_status' => ['nullable',Rule::in(SalaryTDS::MARITAL_STATUS)],
             'annual_salary_from.*' => 'sometimes|nullable|numeric',
             'annual_salary_to.*' => 'sometimes|nullable|numeric|gte:annual_salary_from.*',
             'tds_in_percent.*' => 'sometimes|required_with:annual_salary_from.*|numeric|between:0,100',

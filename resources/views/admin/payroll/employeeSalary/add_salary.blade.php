@@ -23,7 +23,7 @@
                 <h6 class="card-title mb-0">{{ __('index.payroll_create') }}- {{ $employee->name }}</h6>
             </div>
             <form class="forms-sample" action="{{ route('admin.employee-salaries.store-salary', $employee->id) }}" method="POST">
-            
+
             <div class="card-body">
                     @csrf
                     <input type="hidden" readonly name="employee_id" value="{{ $employee->id }}">

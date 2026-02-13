@@ -17,29 +17,39 @@ class SalaryTDSController extends Controller
     use CustomAuthorizesRequests;
     private $view = 'admin.payrollSetting.salaryTDS.';
 
-    public function __construct(public SalaryTDSService $salaryTDSService)
-    {
-    }
+    public function __construct(public SalaryTDSService $salaryTDSService) {}
 
     /**
      * @throws AuthorizationException
      */
+    // public function index()
+    // {
+
+    //     $this->authorize('salary_tds');
+    //     try {
+    //         $select = ['*'];
+    //         $salaryTDSList = $this->salaryTDSService->getAllSalaryTDSListGroupByMaritalStatus($select);
+    //         $singleSalaryTDS = $salaryTDSList->get('single', collect());
+    //         $marriedSalaryTDS = $salaryTDSList->get('married', collect());
+
+    //         return view($this->view . 'index', compact('singleSalaryTDS','marriedSalaryTDS'));
+    //     } catch (Exception $exception) {
+    //         return redirect()->back()->with('danger', $exception->getMessage());
+    //     }
+    // }
     public function index()
     {
-
         $this->authorize('salary_tds');
         try {
             $select = ['*'];
-            $salaryTDSList = $this->salaryTDSService->getAllSalaryTDSListGroupByMaritalStatus($select);
-            $singleSalaryTDS = $salaryTDSList->get('single', collect());
-            $marriedSalaryTDS = $salaryTDSList->get('married', collect());
+            // Getting all records without grouping
+            $allSalaryTDS = $this->salaryTDSService->getAllSalaryTDSList($select);
 
-            return view($this->view . 'index', compact('singleSalaryTDS','marriedSalaryTDS'));
+            return view($this->view . 'index', compact('allSalaryTDS'));
         } catch (Exception $exception) {
             return redirect()->back()->with('danger', $exception->getMessage());
         }
     }
-
 
     public function create()
     {
@@ -62,7 +72,7 @@ class SalaryTDSController extends Controller
             $this->salaryTDSService->store($validatedData);
             return AppHelper::sendSuccessResponse(__('message.salary_tds_add'));
         } catch (Exception $e) {
-           return AppHelper::sendErrorResponse($e->getMessage(),$e->getCode());
+            return AppHelper::sendErrorResponse($e->getMessage(), $e->getCode());
         }
     }
 
@@ -73,7 +83,7 @@ class SalaryTDSController extends Controller
         try {
 
             $salaryTDSDetail = $this->salaryTDSService->findSalaryTDSById($id);
-            return view($this->view . 'edit',compact('salaryTDSDetail'));
+            return view($this->view . 'edit', compact('salaryTDSDetail'));
         } catch (Exception $exception) {
             return redirect()->back()->with('danger', $exception->getMessage());
         }
@@ -82,15 +92,15 @@ class SalaryTDSController extends Controller
 
     public function update(SalaryTDSUpdateRequest $request, $id)
     {
-        try{
+        try {
 
             $validatedData = $request->validated();
             $salaryTDSDetail = $this->salaryTDSService->findSalaryTDSById($id);
-            $this->salaryTDSService->updateDetail($salaryTDSDetail,$validatedData);
+            $this->salaryTDSService->updateDetail($salaryTDSDetail, $validatedData);
             return redirect()
                 ->route('admin.salary-tds.index')
                 ->with('success', __('message.salary_tds_update'));
-        }catch(Exception $exception){
+        } catch (Exception $exception) {
             return redirect()
                 ->back()
                 ->with('danger', $exception->getMessage());
