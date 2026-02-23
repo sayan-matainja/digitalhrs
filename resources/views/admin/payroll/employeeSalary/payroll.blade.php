@@ -114,8 +114,8 @@
                             </label>
                         </div>
                         <div class="col-lg col-md-4 mb-3 form-check">
-                            <input type="checkbox" checked value="1" name="attendance" id="use_attendance">
-                            <label class="form-check-label" for="">
+                            <input type="checkbox" {{ isset($filterData['attendance']) && $filterData['attendance'] == 1 ? 'checked' : '' }} value="1" name="attendance" id="use_attendance">
+                            <label class="form-check-label" for="use_attendance">
                                 {{ __('index.use_attendance') }}
                             </label>
                         </div>

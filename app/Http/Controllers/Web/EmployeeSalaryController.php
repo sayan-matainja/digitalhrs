@@ -178,7 +178,7 @@ class EmployeeSalaryController extends Controller
                     'include_pf' => ['nullable'],
                     'include_tada' => ['nullable'],
                     'include_advance_salary'=> ['nullable'],
-                    'attendance'=>['required'],
+                    'attendance'=>['nullable'], //✅ ADD THIS LINE
                     'absent_paid'=>['nullable'],
                     'department_id'=>['nullable'],
                     'branch_id'=>['required'],
@@ -196,6 +196,7 @@ class EmployeeSalaryController extends Controller
                 $filterData['include_tds'] =  $filterData['include_tds'] ?? 0;
                 $filterData['include_ssf'] =  $filterData['include_ssf'] ?? 0;
                 $filterData['include_pf'] =  $filterData['include_pf'] ?? 0;
+                $filterData['attendance'] =  $filterData['attendance'] ?? 0;  // ✅ ADD THIS LINE
 
 
                 $payrolls = $this->generatePayrollService->getEmployeeSalariesToCreatePayslip($filterData);
