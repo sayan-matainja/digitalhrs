@@ -26,14 +26,23 @@ use Illuminate\Support\Facades\Log;
 
 class GeneratePayrollService
 {
-    public function __construct(protected UserRepository $userRepo, protected SalaryGroupRepository $groupRepository,
-                                protected TadaRepository $tadaRepository, protected EmployeePayslipRepository $payslipRepository,
-                                protected EmployeePayslipDetailRepository $payslipDetailRepository,protected EmployeePayslipAdditionalRepository $additionalRepository,
-                                protected EmployeeSalaryRepository $employeeSalaryRepository,
-                                protected SSFService $ssfService, protected BonusService $bonusService, protected SalaryComponentService $salaryComponentService,
-                                protected FiscalYearService $fiscalYearService, protected SalaryReviseHistoryService $salaryReviseHistoryService,
-                                protected AdvanceSalaryService $advanceSalaryService, protected PFService $pfService,
-    protected LoanRepaymentService $repaymentService){}
+    public function __construct(
+        protected UserRepository $userRepo,
+        protected SalaryGroupRepository $groupRepository,
+        protected TadaRepository $tadaRepository,
+        protected EmployeePayslipRepository $payslipRepository,
+        protected EmployeePayslipDetailRepository $payslipDetailRepository,
+        protected EmployeePayslipAdditionalRepository $additionalRepository,
+        protected EmployeeSalaryRepository $employeeSalaryRepository,
+        protected SSFService $ssfService,
+        protected BonusService $bonusService,
+        protected SalaryComponentService $salaryComponentService,
+        protected FiscalYearService $fiscalYearService,
+        protected SalaryReviseHistoryService $salaryReviseHistoryService,
+        protected AdvanceSalaryService $advanceSalaryService,
+        protected PFService $pfService,
+        protected LoanRepaymentService $repaymentService
+    ) {}
 
     /**
      * @throws Exception
@@ -53,7 +62,7 @@ class GeneratePayrollService
         }));
 
         $additionalData = $this->additionalRepository->getAdditionalComponents($employeePayslipId);
-        $additionalComponent= $additionalData->toArray();
+        $additionalComponent = $additionalData->toArray();
         $additionalEarnings = array_values(array_filter($additionalComponent, function ($component) {
             return $component['component_type'] == 'earning';
         }));
@@ -63,11 +72,11 @@ class GeneratePayrollService
         }));
 
         return [
-            'payslipData'=>$payslipData,
-            "earnings"=>$earnings,
-            "deductions"=>$deductions,
-            "additionalEarnings"=>$additionalEarnings,
-            "additionalDeductions"=>$additionalDeductions,
+            'payslipData' => $payslipData,
+            "earnings" => $earnings,
+            "deductions" => $deductions,
+            "additionalEarnings" => $additionalEarnings,
+            "additionalDeductions" => $additionalDeductions,
         ];
     }
 
@@ -89,48 +98,46 @@ class GeneratePayrollService
         $currentYear = date('Y');
         $currentMonth = date('m');
 
-        if($filterData['salary_cycle'] == 'weekly'){
+        if ($filterData['salary_cycle'] == 'weekly') {
             list($startDate, $endDate) = explode(' to ', $filterData['week']);
 
-            $firstDay = date('Y-m-d',strtotime($startDate));
-            $lastDay = date('Y-m-d',strtotime($endDate));
+            $firstDay = date('Y-m-d', strtotime($startDate));
+            $lastDay = date('Y-m-d', strtotime($endDate));
 
-            $duration = $firstDay.' to '.$lastDay;
+            $duration = $firstDay . ' to ' . $lastDay;
+        } else {
 
-        }else{
-
-            if($isBsEnabled){
+            if ($isBsEnabled) {
                 $dateInAD = AppHelper::findAdDatesFromNepaliMonthAndYear($filterData['year'], $filterData['month']);
-                $firstDay = date('Y-m-d',strtotime($dateInAD['start_date'])) ?? null;
-                $lastDay = date('Y-m-d',strtotime($dateInAD['end_date'])) ?? null;
+                $firstDay = date('Y-m-d', strtotime($dateInAD['start_date'])) ?? null;
+                $lastDay = date('Y-m-d', strtotime($dateInAD['end_date'])) ?? null;
 
                 $nepaliDate = new NepaliDate();
                 $nepaliMonth = $nepaliDate->getNepaliMonth($filterData['month']);
-                $duration = $nepaliMonth.' '. $filterData['year'];
+                $duration = $nepaliMonth . ' ' . $filterData['year'];
                 $currentNepaliYearMonth = AppHelper::getCurrentYearMonth();
                 $currentYear = $currentNepaliYearMonth['year'];
                 $currentMonth = $currentNepaliYearMonth['month'];
+            } else {
 
-            }else{
+                $duration = date('F', mktime(0, 0, 0, $filterData['month'], 1)) . ' ' . $filterData['year'];
 
-                $duration = date('F', mktime(0, 0, 0, $filterData['month'], 1)).' '. $filterData['year'];
-
-                $firstDay = date($filterData['year'].'-'.$filterData['month'].'-01');
-                $lastDay = date($filterData['year'].'-'. $filterData['month'].'-'.date('t', strtotime($firstDay)));
+                $firstDay = date($filterData['year'] . '-' . $filterData['month'] . '-01');
+                $lastDay = date($filterData['year'] . '-' . $filterData['month'] . '-' . date('t', strtotime($firstDay)));
                 $currentYear = date('Y');
                 $currentMonth = date('m');
             }
         }
 
         $enableTaxExemption = AppHelper::enableTaxExemption();
-        $employees = $this->employeeSalaryRepository->getAllEmployeeForPayroll($firstDay,$filterData);
-        $ssfDetail = $this->ssfService->getSSFDetailForPayroll($firstDay,$lastDay);
-        $pfDetail = $this->pfService->getPFDetailForPayroll($firstDay,$lastDay);
+        $employees = $this->employeeSalaryRepository->getAllEmployeeForPayroll($firstDay, $filterData);
+        $ssfDetail = $this->ssfService->getSSFDetailForPayroll($firstDay, $lastDay);
+        $pfDetail = $this->pfService->getPFDetailForPayroll($firstDay, $lastDay);
 
 
-        foreach ($employees as $employee){
+        foreach ($employees as $employee) {
 
-            $payrollData  = $this->payslipRepository->getEmployeePayslipSummary($employee->employee_id, $firstDay, $lastDay, $isBsEnabled,$filterData);
+            $payrollData  = $this->payslipRepository->getEmployeePayslipSummary($employee->employee_id, $firstDay, $lastDay, $isBsEnabled, $filterData);
 
             if (!isset($payrollData->status) || $payrollData->status == PayslipStatusEnum::generated->value) {
                 $employeePayrollData = $this->userRepo->getEmployeeAccountDetailsToGeneratePayslip($employee->employee_id, $filterData);
@@ -142,34 +149,32 @@ class GeneratePayrollService
 
 
                     /** calculation of payroll if salary cycle is weekly */
-                    if($employeePayrollData[0]->salary_cycle == 'weekly') {
+                    if ($employeePayrollData[0]->salary_cycle == 'weekly') {
 
 
                         /** check if attendance data is present, if not don't generate payroll */
-                        $attendanceData = AttendanceHelper::getWeeklyDetail($employee->employee_id,$isBsEnabled , $firstDay, $lastDay);
-                        if($attendanceData['totalWorkedHourInMin'] == 0){
+                        $attendanceData = AttendanceHelper::getWeeklyDetail($employee->employee_id, $isBsEnabled, $firstDay, $lastDay);
+                        if ($attendanceData['totalWorkedHourInMin'] == 0) {
                             continue;
                         }
 
-                        if(isset($salaryReviseData) && (strtotime($salaryReviseData->date_from) > strtotime($lastDay)) ) {
+                        if (isset($salaryReviseData) && (strtotime($salaryReviseData->date_from) > strtotime($lastDay))) {
 
                             $weeklyBasicSalary = $salaryReviseData->base_weekly_salary;
 
                             $weeklyAnnualSalary = $salaryReviseData->base_salary;
-                            $grossSalary = $weeklySalary = ($weeklyAnnualSalary /52) ;
+                            $grossSalary = $weeklySalary = ($weeklyAnnualSalary / 52);
 
                             $weeklyHourRate = $salaryReviseData->hour_rate;
 
                             $weeklyWorkingHours = $salaryReviseData->weekly_hours;
-
-                        }else{
+                        } else {
                             $weeklyBasicSalary = $employeePayrollData[0]->weekly_basic_salary;
                             $weeklyAnnualSalary = $employeePayrollData[0]->annual_salary;
                             $grossSalary = $weeklySalary = ($weeklyAnnualSalary / 52);
                             $weeklyHourRate = $employeePayrollData[0]->hour_rate;
 
                             $weeklyWorkingHours = $employeePayrollData[0]->weekly_hours;
-
                         }
                         $totalIncome = 0;
                         $total_deduction = 0;
@@ -177,26 +182,24 @@ class GeneratePayrollService
                         /**  ssf data */
                         $ssfDeduction = 0;
                         $ssfContribution = 0;
-                        if(($filterData['include_ssf'] == 1) && isset($ssfDetail)){
+                        if (($filterData['include_ssf'] == 1) && isset($ssfDetail)) {
                             /** office contribution */
-                            $ssfContribution = isset($ssfDetail->office_contribution) ? ($ssfDetail->office_contribution * $weeklyBasicSalary)/100 : 0;
+                            $ssfContribution = isset($ssfDetail->office_contribution) ? ($ssfDetail->office_contribution * $weeklyBasicSalary) / 100 : 0;
                             /** employee Deduction */
-                            $ssfDeduction = isset($ssfDetail->employee_contribution) ? ($ssfDetail->employee_contribution * $weeklyBasicSalary)/100 : 0;
-
+                            $ssfDeduction = isset($ssfDetail->employee_contribution) ? ($ssfDetail->employee_contribution * $weeklyBasicSalary) / 100 : 0;
                         }
-                        $weeklySalary-=$ssfDeduction;
+                        $weeklySalary -= $ssfDeduction;
 
                         /** pg data */
                         $pfDeduction = 0;
                         $pfContribution = 0;
-                        if(($filterData['include_pff'] == 1) && isset($pfDetail)){
+                        if (($filterData['include_pff'] == 1) && isset($pfDetail)) {
                             /** office contribution */
-                            $pfContribution = isset($pfDetail->office_contribution) ? ($pfDetail->office_contribution * $weeklyBasicSalary)/100 : 0;
+                            $pfContribution = isset($pfDetail->office_contribution) ? ($pfDetail->office_contribution * $weeklyBasicSalary) / 100 : 0;
                             /** employee Deduction */
-                            $pfDeduction = isset($pfDetail->employee_contribution) ? ($pfDetail->employee_contribution * $weeklyBasicSalary)/100 : 0;
-
+                            $pfDeduction = isset($pfDetail->employee_contribution) ? ($pfDetail->employee_contribution * $weeklyBasicSalary) / 100 : 0;
                         }
-                        $weeklySalary-=$pfDeduction;
+                        $weeklySalary -= $pfDeduction;
 
 
                         /** salary tds calculation */
@@ -205,10 +208,10 @@ class GeneratePayrollService
                             $taxableIncome = $weeklyAnnualSalary;
 
                             $taxes = PayrollHelper::salaryTDSCalculator($employeePayrollData[0]->marital_status, $taxableIncome);
-                            if($ssfDeduction > 0){
+                            if ($ssfDeduction > 0) {
                                 $yearlyTax = ($enableTaxExemption == 0 ? $taxes['total_tax'] : ($taxes['total_tax'] - $taxes['sst']));
-                                $weeklyTax = $yearlyTax/52;
-                            }else{
+                                $weeklyTax = $yearlyTax / 52;
+                            } else {
                                 $weeklyTax = $taxes['weekly_tax'];
                             }
                             $weeklySalary -= $weeklyTax;
@@ -219,14 +222,13 @@ class GeneratePayrollService
                         if ($employeePayrollData[0]->salary_group_id) {
                             $components = $this->groupRepository->findSalaryGroupDetailForPayroll($employeePayrollData[0]->salary_group_id);
 
-                            $employeeSalaryComponents = $this->calculateSalaryComponent($components->salaryComponents, $weeklyAnnualSalary,$weeklyBasicSalary);
+                            $employeeSalaryComponents = $this->calculateSalaryComponent($components->salaryComponents, $weeklyAnnualSalary, $weeklyBasicSalary);
 
 
                             foreach ($employeeSalaryComponents as $component) {
 
                                 if ($component['type'] == 'earning') {
                                     $totalIncome += $component['weekly'];
-
                                 }
 
                                 if ($component['type'] == 'deductions') {
@@ -236,7 +238,6 @@ class GeneratePayrollService
 
                             $totalAllowance += $totalIncome;
                             $totalDeduction += $total_deduction;
-
                         }
 
 
@@ -253,44 +254,65 @@ class GeneratePayrollService
                         $leaveData = $leaveWiseData['leaveTakenByType'];
                         $paidLeaveDays = $leaveData->where('leave_type', 'paid')->sum('total_days');
                         $unpaidLeaveDays = $leaveData->where('leave_type', 'unpaid')->sum('total_days');
+                        $weeklyWorkedHours =  $attendanceData['totalWorkedHourInMin'] ?? 0; //new added
+
+                        // $weeklyWorkedHours = 0;
+                        // /** calculate present, absent, leave data for payslip */
+                        // if (isset($filterData['attendance'])) {
+
+                        //     $weeklyWorkedHours =  $attendanceData['totalWorkedHourInMin'];
+
+                        //     $weeklyAbsentHours = $weeklyWorkingHours - ($weeklyWorkedHours/60);
+                        //     $totalAbsentLeaveFee = ($weeklyAbsentHours * $weeklyHourRate);
+
+                        //     if($totalAbsentLeaveFee > $weeklySalary){
+                        //         $totalAbsentLeaveFee = $weeklySalary;
+                        //         $weeklySalary = 0;
+                        //     }else{
+                        //         $weeklySalary -= $totalAbsentLeaveFee;
+                        //     }
+
+                        // }
 
 
-                        $weeklyWorkedHours = 0;
+                        //fix for unchecked and checked box for attendence >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                        $totalAbsentLeaveFee = 0;
                         /** calculate present, absent, leave data for payslip */
-                        if (isset($filterData['attendance'])) {
+                        if (isset($filterData['attendance']) && $filterData['attendance'] == 1) {  // FIXED
 
                             $weeklyWorkedHours =  $attendanceData['totalWorkedHourInMin'];
 
-                            $weeklyAbsentHours = $weeklyWorkingHours - ($weeklyWorkedHours/60);
+                            $weeklyAbsentHours = $weeklyWorkingHours - ($weeklyWorkedHours / 60);
                             $totalAbsentLeaveFee = ($weeklyAbsentHours * $weeklyHourRate);
 
-                            if($totalAbsentLeaveFee > $weeklySalary){
+                            if ($totalAbsentLeaveFee > $weeklySalary) {
                                 $totalAbsentLeaveFee = $weeklySalary;
                                 $weeklySalary = 0;
-                            }else{
+                            } else {
                                 $weeklySalary -= $totalAbsentLeaveFee;
                             }
-
                         }
+                        //end fix >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
 
 
                         /** overtime calculation */
-                        $overTimeEarning =0;
-                        $underTimeDeduction =0;
+                        $overTimeEarning = 0;
+                        $underTimeDeduction = 0;
                         $overTime = PayrollHelper::overTimeCalculator($employee->employee_id, $grossSalary);
                         $overWorkHours = 0;
                         $underWorkHours = 0;
-                        if($employeePayrollData[0]->payroll_type == 'hourly'){
-                            $overWorkHours = ($weeklyWorkedHours/60) - $weeklyWorkingHours;
+                        if ($employeePayrollData[0]->payroll_type == 'hourly') {
+                            $overWorkHours = ($weeklyWorkedHours / 60) - $weeklyWorkingHours;
 
-                            if($overWorkHours > 0){
+                            if ($overWorkHours > 0) {
                                 $overTimeEarning = $overWorkHours * $overTime['hourly_rate'];
                             }
 
-                            if($overWorkHours < 0){
+                            if ($overWorkHours < 0) {
                                 $overWorkHours = 0;
                             }
-
                         }
 
                         $weeklySalary += $overTimeEarning;
@@ -308,7 +330,7 @@ class GeneratePayrollService
                         $totalAdvanceSalary = 0;
                         $advanceSalaryIds = [];
                         if ($filterData['include_advance_salary'] == 1) {
-                            $advanceSalary = $this->advanceSalaryService->getEmployeeApprovedAdvanceSalaries($employee->employee_id,$firstDay, 7);
+                            $advanceSalary = $this->advanceSalaryService->getEmployeeApprovedAdvanceSalaries($employee->employee_id, $firstDay, 7);
                             $totalAdvanceSalary = $advanceSalary->sum('released_amount'); // Sum of total_expense
                             $advanceSalaryIds = $advanceSalary->pluck('id')->toArray(); // Array of TADA ids
                             $weeklySalary -= $totalAdvanceSalary;
@@ -318,7 +340,7 @@ class GeneratePayrollService
                         $totalTada = 0;
                         $tadaIds = [];
                         if ($filterData['include_tada'] == 1) {
-                            $tada = $this->tadaRepository->getEmployeeUnsettledTadaLists($employee->employee_id,$firstDay, 7);
+                            $tada = $this->tadaRepository->getEmployeeUnsettledTadaLists($employee->employee_id, $firstDay, 7);
 
                             $totalTada = $tada->sum('total_expense'); // Sum of total_expense
                             $tadaIds = $tada->pluck('id')->toArray(); // Array of TADA ids
@@ -353,17 +375,17 @@ class GeneratePayrollService
                             'unpaid_leave' => $unpaidLeaveDays,
                             'overtime' => $overTimeEarning,
                             'undertime' => $underTimeDeduction,
-                            'ssf_contribution'=> $ssfContribution,
-                            'ssf_deduction'=>$ssfDeduction,
-                            'tada_ids'=> ($filterData['include_tada'] == 1) ? $tadaIds : null,
-                            'advance_salary_ids'=> $advanceSalaryIds,
-                            'working_hours'=>$weeklyWorkingHours,
-                            'worked_hours'=>($weeklyWorkedHours / 60),
-                            'overtime_hours'=>$overWorkHours,
-                            'undertime_hours'=>$underWorkHours,
-                            'hour_rate'=>$weeklyHourRate,
-                            'pf_deduction'=>$pfDeduction,
-                            'pf_contribution'=>$pfContribution,
+                            'ssf_contribution' => $ssfContribution,
+                            'ssf_deduction' => $ssfDeduction,
+                            'tada_ids' => ($filterData['include_tada'] == 1) ? $tadaIds : null,
+                            'advance_salary_ids' => $advanceSalaryIds,
+                            'working_hours' => $weeklyWorkingHours,
+                            'worked_hours' => ($weeklyWorkedHours / 60),
+                            'overtime_hours' => $overWorkHours,
+                            'undertime_hours' => $underWorkHours,
+                            'hour_rate' => $weeklyHourRate,
+                            'pf_deduction' => $pfDeduction,
+                            'pf_contribution' => $pfContribution,
                         );
 
                         $employeePaySlip = $this->payslipRepository->getEmployeePayslipData($employee->employee_id, $firstDay, $lastDay);
@@ -375,10 +397,8 @@ class GeneratePayrollService
                             }
 
                             $employeeSalaryData = $employeePaySlip;
-
                         } else {
                             $employeeSalaryData = $this->payslipRepository->store($employeePayslipData);
-
                         }
                         /** add payslip detail data  */
                         if ($employeeSalaryData) {
@@ -392,7 +412,6 @@ class GeneratePayrollService
                                         ];
 
                                         $this->payslipDetailRepository->store($employeePayslipDetail);
-
                                     }
                                 }
                             }
@@ -418,9 +437,9 @@ class GeneratePayrollService
 
 
                         /** check if attendance data is present, if not don't generate payroll */
-                        $attendanceData = AttendanceHelper::getMonthlyDetail($employee->employee_id ,$isBsEnabled ,$filterData['year'] ,$filterData['month']);
+                        $attendanceData = AttendanceHelper::getMonthlyDetail($employee->employee_id, $isBsEnabled, $filterData['year'], $filterData['month']);
 
-                        if($attendanceData['totalPresent'] == 0){
+                        if ($attendanceData['totalPresent'] == 0) {
                             continue;
                         }
 
@@ -428,7 +447,7 @@ class GeneratePayrollService
                         $monthlyWorkingHours = 0;
                         if (isset($salaryReviseData) && strtotime($salaryReviseData->date_from) > strtotime($lastDay)) {
 
-                            if($employeePayrollData[0]->payroll_type == 'hourly'){
+                            if ($employeePayrollData[0]->payroll_type == 'hourly') {
                                 $monthlyHourRate = $salaryReviseData->hour_rate;
 
                                 $monthlyWorkingHours = $salaryReviseData->monthly_hours;
@@ -437,12 +456,11 @@ class GeneratePayrollService
 
                             $monthlyAnnualSalary = $salaryReviseData->base_salary;
 
-                            $grossSalary = $monthlyAnnualSalary/12;
+                            $grossSalary = $monthlyAnnualSalary / 12;
                             $annualGrossSalary = $monthlyAnnualSalary;
                             $monthlyFixedAllowance = $salaryReviseData->base_monthly_allowance;
-
-                        }else{
-                            if($employeePayrollData[0]->payroll_type == 'hourly'){
+                        } else {
+                            if ($employeePayrollData[0]->payroll_type == 'hourly') {
                                 $monthlyHourRate = $employeePayrollData[0]->hour_rate;
 
                                 $monthlyWorkingHours = $employeePayrollData[0]->monthly_hours;
@@ -461,50 +479,57 @@ class GeneratePayrollService
 
                         $totalIncome = 0;
                         $total_deduction = 0;
-
+                        $totalIncomeNoTaxable = 0;
+                        $totalIncomeNoTax = 0;
                         /** get ssf data */
                         $ssfDeduction = 0;
                         $ssfContribution = 0;
-                        if(($filterData['include_ssf'] == 1) && isset($ssfDetail)){
+                        if (($filterData['include_ssf'] == 1) && isset($ssfDetail)) {
 
                             /** office contribution */
-                            $ssfContribution = isset($ssfDetail->office_contribution) ? ($ssfDetail->office_contribution * $monthlyBasicSalary)/100 : 0;
+                            $ssfContribution = isset($ssfDetail->office_contribution) ? ($ssfDetail->office_contribution * $monthlyBasicSalary) / 100 : 0;
                             /** employee Deduction */
-                            $ssfDeduction = isset($ssfDetail->employee_contribution) ? ($ssfDetail->employee_contribution * $monthlyBasicSalary)/100 : 0;
+                            $ssfDeduction = isset($ssfDetail->employee_contribution) ? ($ssfDetail->employee_contribution * $monthlyBasicSalary) / 100 : 0;
                         }
 
-                        $monthSalary-=$ssfDeduction;
+                        $monthSalary -= $ssfDeduction;
 
 
                         /** pf data */
                         $pfDeduction = 0;
                         $pfContribution = 0;
-                        if(($filterData['include_pf'] == 1) && isset($pfDetail)){
+                        if (($filterData['include_pf'] == 1) && isset($pfDetail)) {
                             /** office contribution */
-                            $pfContribution = isset($pfDetail->office_contribution) ? ($pfDetail->office_contribution * $monthlyBasicSalary)/100 : 0;
+                            $pfContribution = isset($pfDetail->office_contribution) ? ($pfDetail->office_contribution * $monthlyBasicSalary) / 100 : 0;
                             /** employee Deduction */
-                            $pfDeduction = isset($pfDetail->employee_contribution) ? ($pfDetail->employee_contribution * $monthlyBasicSalary)/100 : 0;
-
+                            $pfDeduction = isset($pfDetail->employee_contribution) ? ($pfDetail->employee_contribution * $monthlyBasicSalary) / 100 : 0;
                         }
-                        $monthSalary-=$pfDeduction;
+                        $monthSalary -= $pfDeduction;
 
                         /** salary components calculation */
                         $employeeSalaryComponents = [];
                         if ($employeePayrollData[0]->salary_group_id) {
                             $components = $this->groupRepository->findSalaryGroupDetailForPayroll($employeePayrollData[0]->salary_group_id);
 
-                            $employeeSalaryComponents = $this->calculateSalaryComponent($components->salaryComponents,$annualGrossSalary, $monthlyBasicSalary);
+                            $employeeSalaryComponents = $this->calculateSalaryComponent($components->salaryComponents, $annualGrossSalary, $monthlyBasicSalary);
 
                             foreach ($employeeSalaryComponents as $component) {
 
                                 if ($component['type'] == 'earning') {
+
+
                                     $totalIncome += $component['monthly'];
-                                    Log::info('income component '. $component['monthly']);
+
+                                    Log::info('income component ' . $component['monthly']);
                                 }
 
                                 if ($component['type'] == 'deductions') {
                                     $total_deduction += $component['monthly'];
-                                    Log::info('deduction component '. $component['monthly']);
+                                    if ($component['taxable'] == 0) {
+
+                                        $totalIncomeNoTax += $component['monthly'];
+                                    }
+                                    Log::info('deduction component ' . $component['monthly']);
                                 }
                             }
 
@@ -512,26 +537,27 @@ class GeneratePayrollService
                             $totalDeduction += $total_deduction;
                             $monthSalary += $totalIncome;
                             $monthSalary -= $total_deduction;
-
+                            $totalIncomeNoTaxable += $totalIncomeNoTax;
                         }
+
+                        // dd($totalIncomeNoTaxable);
+                        $ActualSalary = $monthSalary;
 
                         $additionalSalaryComponents = [];
                         $additionalComponents = $this->salaryComponentService->getGeneralSalaryComponents();
 
                         if (count($additionalComponents) > 0) {
-                            $additionalSalaryComponents = $this->calculateSalaryComponent($additionalComponents,$annualGrossSalary, $monthlyBasicSalary);
+                            $additionalSalaryComponents = $this->calculateSalaryComponent($additionalComponents, $annualGrossSalary, $monthlyBasicSalary);
                             foreach ($additionalSalaryComponents as $component) {
 
-                                if ($component['type'] == 'deductions') {
+                                // if ($component['type'] == 'deductions') {
 
-                                    $monthSalary -= $component['monthly'];
-                                }
-                                if ($component['type'] == 'earning') {
-                                    $monthSalary += $component['monthly'];
-                                }
-
+                                //     $monthSalary -= $component['monthly'];
+                                // }
+                                // if ($component['type'] == 'earning') {
+                                //     $monthSalary += $component['monthly'];
+                                // }
                             }
-
                         }
 
                         /** Bonus Calculation */
@@ -540,7 +566,7 @@ class GeneratePayrollService
                         $bonusAmount = 0;
                         $bonus = $this->bonusCalculator($filterData['month'], $monthlyBasicSalary, $annualSalary, $employee);
 
-                        if(count($bonus) > 0){
+                        if (count($bonus) > 0) {
                             $bonusAmount = $bonus['amount'];
                             $monthSalary += $bonusAmount;
                             if ($filterData['include_tds'] == 1) {
@@ -549,22 +575,24 @@ class GeneratePayrollService
                             }
                         }
 
-
                         /** salary tds calculation */
                         $monthlyTax = 0;
                         if ($filterData['include_tds'] == 1) {
-                            $taxableIncome = $monthSalary * 12;
+                            // $taxableIncome = $monthSalary * 12;
+
+                            $taxableIncome = $ActualSalary * 12; // did acording client given excel
+
                             $taxes = PayrollHelper::salaryTDSCalculator($employeePayrollData[0]->marital_status, $taxableIncome);
-                            if($ssfDeduction > 0){
+
+                            if ($ssfDeduction > 0) {
                                 $yearlyTax = ($enableTaxExemption == 0 ? $taxes['total_tax'] : ($taxes['total_tax'] - $taxes['sst']));
-                                $monthlyTax = $yearlyTax/12;
-
-                            }else{
-                                $monthlyTax = $taxes['monthly_tax'];
-
+                                $monthlyTax = $yearlyTax / 12;
+                            } else {
+                                $monthlyTax = ($taxes['monthly_tax']);
                             }
 
                             $monthSalary -= $monthlyTax;
+                            $monthSalary += $totalIncomeNoTaxable;
                         }
 
 
@@ -583,62 +611,92 @@ class GeneratePayrollService
                         $leaveData = $leaveWiseData['leaveTakenByType'];
                         $paidLeaveDays = $leaveData->where('leave_type', 'paid')->sum('total_days');
                         $unpaidLeaveDays = $leaveData->where('leave_type', 'unpaid')->sum('total_days');
+
+
+
+                        //fix for unchecked and checked box for attendence >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
                         $totalAbsentLeaveFee = 0;
                         $absentDays = 0;
-                        if (isset($filterData['attendance'])) {
-                            if($employeePayrollData[0]->payroll_type == 'hourly'){
-
-                                $lessWorkHours = $monthlyWorkingHours - ($monthlyWorkedHours/60);
-
+                        if (isset($filterData['attendance']) && $filterData['attendance'] == 1) {  // FIXED
+                            if ($employeePayrollData[0]->payroll_type == 'hourly') {
+                                $lessWorkHours = $monthlyWorkingHours - ($monthlyWorkedHours / 60);
                                 $totalAbsentLeaveFee = $lessWorkHours * $monthlyHourRate;
-                            }else{
-                                if($currentYear == $filterData['year'] && $currentMonth == $filterData['month']){
-                                    $absentDays = $attendanceData['totalDays'] - $weekends -$attendanceData['totalPresent']-$attendanceData['totalHoliday']-$attendanceData['totalLeave'];
-                                }else{
+                            } else {
+                                if ($currentYear == $filterData['year'] && $currentMonth == $filterData['month']) {
+                                    $absentDays = $attendanceData['totalDays'] - $weekends - $attendanceData['totalPresent'] - $attendanceData['totalHoliday'] - $attendanceData['totalLeave'];
+                                } else {
                                     $absentDays = $attendanceData['totalAbsent'];
                                 }
-
                                 $totalAbsentLeaveFee = ($deductionFee * $absentDays) + ($deductionFee * $unpaidLeaveDays);
                             }
 
-
-                            if($totalAbsentLeaveFee > $monthSalary){
+                            if ($totalAbsentLeaveFee > $monthSalary) {
                                 $totalAbsentLeaveFee = $monthSalary;
                                 $monthSalary = 0;
-                            }else{
+                            } else {
                                 $monthSalary -= $totalAbsentLeaveFee;
                             }
-
                         }
+                        //end >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
+                        // $totalAbsentLeaveFee = 0;
+                        // $absentDays = 0;
+                        // if (isset($filterData['attendance'])) {
+                        //     if($employeePayrollData[0]->payroll_type == 'hourly'){
+
+                        //         $lessWorkHours = $monthlyWorkingHours - ($monthlyWorkedHours/60);
+
+                        //         $totalAbsentLeaveFee = $lessWorkHours * $monthlyHourRate;
+                        //     }else{
+                        //         if($currentYear == $filterData['year'] && $currentMonth == $filterData['month']){
+                        //             $absentDays = $attendanceData['totalDays'] - $weekends -$attendanceData['totalPresent']-$attendanceData['totalHoliday']-$attendanceData['totalLeave'];
+                        //         }else{
+                        //             $absentDays = $attendanceData['totalAbsent'];
+                        //         }
+
+                        //         $totalAbsentLeaveFee = ($deductionFee * $absentDays) + ($deductionFee * $unpaidLeaveDays);
+                        //     }
+
+
+                        //     if($totalAbsentLeaveFee > $monthSalary){
+                        //         $totalAbsentLeaveFee = $monthSalary;
+                        //         $monthSalary = 0;
+                        //     }else{
+                        //         $monthSalary -= $totalAbsentLeaveFee;
+                        //     }
+
+                        // }
 
                         /** adjust absent days as paid */
-//                            if ($filterData['absent_paid'] == 1) {
-//                                $absentFees = $deductionFee * $attendanceData['totalAbsent'];
-//
-//                                $monthSalary += $absentFees;
-//                            }
+                        //    if ($filterData['absent_paid'] == 1) {
+                        //        $absentFees = $deductionFee * $attendanceData['totalAbsent'];
+
+                        //        $monthSalary += $absentFees;
+                        //    }
 
                         /** adjust approved leaves as paid */
-//                            if ($filterData['approved_paid_leaves'] == 1) {
-//                                $leaveFees = $deductionFee * $unpaidLeaveDays;
-//
-//                                $monthSalary += $leaveFees;
-//                            }
+                        //    if ($filterData['approved_paid_leaves'] == 1) {
+                        //        $leaveFees = $deductionFee * $unpaidLeaveDays;
+
+                        //        $monthSalary += $leaveFees;
+                        //    }
 
 
                         /** overtime calculation */
                         $overTime = PayrollHelper::overTimeCalculator($employee->employee_id, $grossSalary);
                         $overWorkHours = 0;
                         $underWorkHours = 0;
-                        if($employeePayrollData[0]->payroll_type == 'hourly'){
+                        if ($employeePayrollData[0]->payroll_type == 'hourly') {
                             $overTimeEarning = 0;
-                            $overWorkHours = ($monthlyWorkedHours/60) - $monthlyWorkingHours;
+                            $overWorkHours = ($monthlyWorkedHours / 60) - $monthlyWorkingHours;
 
-                            if($overWorkHours > 0){
+                            if ($overWorkHours > 0) {
                                 $overTimeEarning = $overWorkHours * $overTime['hourly_rate'];
                             }
-
-                        }else{
+                        } else {
                             if ($overTime['hourly_rate'] > 0) {
                                 $totalOverTime += $attendanceData['totalOverTime'];
                             }
@@ -654,7 +712,7 @@ class GeneratePayrollService
 
                         /** undertime calculation */
                         $underTimeDeduction = 0;
-                        if($employeePayrollData[0]->payroll_type == 'annual') {
+                        if ($employeePayrollData[0]->payroll_type == 'annual') {
 
                             $underTimeRate = PayrollHelper::underTimeCalculator($grossSalary);
                             if ($underTimeRate > 0) {
@@ -668,11 +726,11 @@ class GeneratePayrollService
                         /** loan calculation */
                         $loanAmount = 0;
                         $loanRepaymentId = null;
-                        $loanRepayment = $this->repaymentService->getLoanRepayment($employee->employee_id,$firstDay,$lastDay);
+                        $loanRepayment = $this->repaymentService->getLoanRepayment($employee->employee_id, $firstDay, $lastDay);
 
-                        if(isset($loanRepayment)){
+                        if (isset($loanRepayment)) {
                             $loanAmount = $loanRepayment->principal_amount + $loanRepayment->interest_amount + $loanRepayment->settlement_amount;
-                            if($monthSalary > $loanAmount){
+                            if ($monthSalary > $loanAmount) {
                                 $loanRepaymentId = $loanRepayment->id;
                                 $monthSalary -= $loanAmount;
                             }
@@ -683,7 +741,7 @@ class GeneratePayrollService
                         $totalAdvanceSalary = 0;
                         $advanceSalaryIds = [];
                         if ($filterData['include_advance_salary'] == 1) {
-                            $advanceSalary = $this->advanceSalaryService->getEmployeeApprovedAdvanceSalaries($employee->employee_id,$firstDay,30);
+                            $advanceSalary = $this->advanceSalaryService->getEmployeeApprovedAdvanceSalaries($employee->employee_id, $firstDay, 30);
                             $totalAdvanceSalary = $advanceSalary->sum('released_amount'); // Sum of total_expense
                             $advanceSalaryIds = $advanceSalary->pluck('id')->toArray(); // Array of TADA ids
                             $monthSalary -= $totalAdvanceSalary;
@@ -694,14 +752,14 @@ class GeneratePayrollService
                         $totalTada = 0;
                         $tadaIds = [];
                         if ($filterData['include_tada'] == 1) {
-                            $tada = $this->tadaRepository->getEmployeeUnsettledTadaLists($employee->employee_id,$firstDay,30);
+                            $tada = $this->tadaRepository->getEmployeeUnsettledTadaLists($employee->employee_id, $firstDay, 30);
 
                             $totalTada = $tada->sum('total_expense'); // Sum of total_expense
                             $tadaIds = $tada->pluck('id')->toArray(); // Array of TADA ids
                             $monthSalary += $totalTada;
                         }
 
-
+                        // dd($totalIncomeNoTaxable);
                         $employeePayslipData = [
                             "employee_id" => $employee->employee_id,
                             "status" => 'generated',
@@ -731,20 +789,20 @@ class GeneratePayrollService
                             'overtime' => $overTimeEarning,
                             'undertime' => $underTimeDeduction,
                             'is_bs_enabled' => $isBsEnabled,
-                            'ssf_contribution'=>$ssfContribution,
-                            'ssf_deduction'=>$ssfDeduction,
-                            'bonus'=> $bonusAmount,
-                            'tada_ids'=> ($filterData['include_tada'] == 1) ? $tadaIds : null,
-                            'advance_salary_ids'=> $filterData['include_advance_salary'] == 1 ? $advanceSalaryIds : null,
-                            'working_hours'=>$monthlyWorkingHours,
-                            'worked_hours'=>($monthlyWorkedHours / 60),
-                            'overtime_hours'=>$overWorkHours,
-                            'undertime_hours'=>$underWorkHours,
-                            'hour_rate'=>$monthlyHourRate,
-                            'pf_deduction'=>$pfDeduction,
-                            'pf_contribution'=>$pfContribution,
-                            'loan_amount'=>$loanAmount,
-                            'loan_repayment_id'=>$loanRepaymentId ?? null,
+                            'ssf_contribution' => $ssfContribution,
+                            'ssf_deduction' => $ssfDeduction,
+                            'bonus' => $bonusAmount,
+                            'tada_ids' => ($filterData['include_tada'] == 1) ? $tadaIds : null,
+                            'advance_salary_ids' => $filterData['include_advance_salary'] == 1 ? $advanceSalaryIds : null,
+                            'working_hours' => $monthlyWorkingHours,
+                            'worked_hours' => ($monthlyWorkedHours / 60),
+                            'overtime_hours' => $overWorkHours,
+                            'undertime_hours' => $underWorkHours,
+                            'hour_rate' => $monthlyHourRate,
+                            'pf_deduction' => $pfDeduction,
+                            'pf_contribution' => $pfContribution,
+                            'loan_amount' => $loanAmount,
+                            'loan_repayment_id' => $loanRepaymentId ?? null,
                         ];
 
                         $employeePaySlip = $this->payslipRepository->getEmployeePayslipData($employee->employee_id, $firstDay, $lastDay);
@@ -760,10 +818,8 @@ class GeneratePayrollService
                             }
 
                             $employeeSalaryData = $employeePaySlip;
-
                         } else {
                             $employeeSalaryData = $this->payslipRepository->store($employeePayslipData);
-
                         }
 
 
@@ -780,7 +836,6 @@ class GeneratePayrollService
                                         ];
 
                                         $this->payslipDetailRepository->store($employeePayslipDetail);
-
                                     }
                                 }
 
@@ -793,10 +848,8 @@ class GeneratePayrollService
                                         ];
 
                                         $this->additionalRepository->store($employeePayslipDetail);
-
                                     }
                                 }
-
                             }
                         }
 
@@ -814,9 +867,7 @@ class GeneratePayrollService
                         $totalBasicSalary += $employeePayrollData[0]->monthly_basic_salary;
                         $totalNetSalary += $employeeSalaryData->net_salary;
                     }
-
                 }
-
             } else {
 
                 $payslipDetailData = $this->payslipDetailRepository->getAll($payrollData->id);
@@ -843,19 +894,18 @@ class GeneratePayrollService
                         $totalDeduction += $detail->amount;
                     }
                 }
-
             }
         }
 
         $payrollSummary = [
-            'duration'=>$duration,
-            'totalBasicSalary'=>round($totalBasicSalary,2),
-            'totalNetSalary'=>round($totalNetSalary,2),
-            'totalAllowance'=>round($totalAllowance,2),
-            'totalDeduction'=>round($totalDeduction,2),
-            'otherPayment'=>round($otherPayment,2),
-            'totalOverTime'=>round($totalOverTime,2),
-            'totalUnderTime'=>round($totalUnderTime,2),
+            'duration' => $duration,
+            'totalBasicSalary' => round($totalBasicSalary, 2),
+            'totalNetSalary' => round($totalNetSalary, 2),
+            'totalAllowance' => round($totalAllowance, 2),
+            'totalDeduction' => round($totalDeduction, 2),
+            'otherPayment' => round($otherPayment, 2),
+            'totalOverTime' => round($totalOverTime, 2),
+            'totalUnderTime' => round($totalUnderTime, 2),
         ];
 
 
@@ -867,8 +917,8 @@ class GeneratePayrollService
         });
 
         return [
-            'payrollSummary'=>$payrollSummary,
-            'employeeSalary'=>$employeeSalary
+            'payrollSummary' => $payrollSummary,
+            'employeeSalary' => $employeeSalary
         ];
     }
 
@@ -887,37 +937,51 @@ class GeneratePayrollService
                     "id" => $component->id,
                     "name" => $component->name,
                     "type" => $component->component_type,
+                    "taxable" => $component->taxable,
                     "annual" => $annual,
                     "monthly" => $amount,
                     "weekly" => round($weekly, 2),
                 ];
-
             }
         }
         return $payslipComponents;
-
     }
 
+    // public function calculateComponent($valueType, $annualValue, $annualSalary, $basicSalary): float
+    // {
+
+    //     $componentValue = 0;
+    //     if ($valueType == 'fixed') {
+
+    //         $componentValue = $annualValue/12;
+
+
+    //     } else if ($valueType == 'ctc') {
+
+    //         $componentValue = (($annualValue / 100) * $annualSalary)/12;
+
+
+    //     } else if ($valueType == 'basic') {
+
+    //         $componentValue = (($annualValue / 100) * $basicSalary)/12;
+
+    //     }
+
+    //     return round($componentValue, 2);
+    // }
+
+    //new
     public function calculateComponent($valueType, $annualValue, $annualSalary, $basicSalary): float
     {
-
         $componentValue = 0;
         if ($valueType == 'fixed') {
-
-            $componentValue = $annualValue/12;
-
-
+            $componentValue = $annualValue / 12;
         } else if ($valueType == 'ctc') {
-
-            $componentValue = (($annualValue / 100) * $annualSalary)/12;
-
-
+            $componentValue = (($annualValue / 100) * $annualSalary) / 12;
         } else if ($valueType == 'basic') {
-
-            $componentValue = (($annualValue / 100) * $basicSalary)/12;
-
+            //$basicSalary is already monthly, not dividing by 12
+            $componentValue = ($annualValue / 100) * $basicSalary;
         }
-
         return round($componentValue, 2);
     }
 
@@ -934,23 +998,23 @@ class GeneratePayrollService
         $totalOverTime = 0;
         $isBsEnabled = AppHelper::ifDateInBsEnabled();
 
-        if($isBsEnabled){
+        if ($isBsEnabled) {
             $currentNepaliYearMonth = AppHelper::getCurrentYearMonth();
             $year = $currentNepaliYearMonth['year'];
             $month = $currentNepaliYearMonth['month'] - 1;
-            if($month == 0){
+            if ($month == 0) {
                 $month = 12;
-                $year = $currentNepaliYearMonth['year']-1;
+                $year = $currentNepaliYearMonth['year'] - 1;
             }
             $nepaliDate = new NepaliDate();
             $nepaliMonth = $nepaliDate->getNepaliMonth($month);
-            $duration = $nepaliMonth.' '. $year;
+            $duration = $nepaliMonth . ' ' . $year;
 
             $dateInAd = AppHelper::findAdDatesFromNepaliMonthAndYear($year, $month);
 
-            $firstDay =$dateInAd['start_date'];
-            $lastDay =$dateInAd['end_date'];
-        }else{
+            $firstDay = $dateInAd['start_date'];
+            $lastDay = $dateInAd['end_date'];
+        } else {
             $firstDay = date('Y-m-01', strtotime('first day of last month'));
             $lastDay = date('Y-m-t', strtotime('last day of last month'));
             $duration = date('F Y', strtotime('last month'));
@@ -959,28 +1023,30 @@ class GeneratePayrollService
         $employeeSalary  = $this->payslipRepository->getEmployeeCurrentPayslipList($firstDay, $lastDay, $isBsEnabled);
 
         $payrollSummary = [
-            'totalBasicSalary'=>$totalBasicSalary,
-            'duration'=>$duration,
-            'totalNetSalary'=>$totalNetSalary,
-            'totalAllowance'=>$totalAllowance,
-            'totalCommission'=>$totalCommission,
-            'totalLoan'=>$totalLoan,
-            'totalDeduction'=>$totalDeduction,
-            'otherPayment'=>$otherPayment,
-            'totalOverTime'=>$totalOverTime,
+            'totalBasicSalary' => $totalBasicSalary,
+            'duration' => $duration,
+            'totalNetSalary' => $totalNetSalary,
+            'totalAllowance' => $totalAllowance,
+            'totalCommission' => $totalCommission,
+            'totalLoan' => $totalLoan,
+            'totalDeduction' => $totalDeduction,
+            'otherPayment' => $otherPayment,
+            'totalOverTime' => $totalOverTime,
         ];
 
         return [
-            'payrollSummary'=>$payrollSummary,
-            'employeeSalary'=>$employeeSalary
+            'payrollSummary' => $payrollSummary,
+            'employeeSalary' => $employeeSalary
         ];
     }
 
-    public function getEmployeePayslip($employeeId, $startDate, $endDate, $isBsEnabled){
+    public function getEmployeePayslip($employeeId, $startDate, $endDate, $isBsEnabled)
+    {
         return $this->payslipRepository->getEmployeePayslipList($employeeId, $startDate, $endDate, $isBsEnabled);
     }
 
-    public function getPaidEmployeePayslip($employeeId, $isBsEnabled){
+    public function getPaidEmployeePayslip($employeeId, $isBsEnabled)
+    {
 
         return $this->payslipRepository->getPaidEmployeePayslipList($employeeId, $isBsEnabled);
     }
@@ -1004,8 +1070,8 @@ class GeneratePayrollService
         $maritalStatus = $employee->marital_status;
         $employeeId = $employee->employee_id;
 
-        $bonus = $this->bonusService->findBonusByEmployeeAndMonth($employeeId,$month);
-        if(isset($bonus)){
+        $bonus = $this->bonusService->findBonusByEmployeeAndMonth($employeeId, $month);
+        if (isset($bonus)) {
 
             if ($bonus->value_type == BonusTypeEnum::fixed->value) {
                 $bonusAmount = $bonus->value;
@@ -1019,24 +1085,25 @@ class GeneratePayrollService
             $bonusTaxes = PayrollHelper::salaryTDSCalculator($maritalStatus, $bonusTaxableIncome);
 
             return [
-                'id'=>$bonus->id,
-                'title'=>$bonus->title,
-                'month'=>$bonus->applicable_month,
-                'amount'=>$bonusAmount,
-                'tax'=> $bonusTaxes['monthly_tax'],
+                'id' => $bonus->id,
+                'title' => $bonus->title,
+                'month' => $bonus->applicable_month,
+                'amount' => $bonusAmount,
+                'tax' => $bonusTaxes['monthly_tax'],
             ];
-
         }
         return [];
     }
 
 
 
-    public function getEmployeeSsfHistory($employeeId, $startDate, $endDate){
+    public function getEmployeeSsfHistory($employeeId, $startDate, $endDate)
+    {
         return $this->payslipRepository->getEmployeeSsfList($employeeId, $startDate, $endDate);
     }
 
-    public function getRecentEmployeeSsf($employeeId){
+    public function getRecentEmployeeSsf($employeeId)
+    {
         return $this->payslipRepository->getRecentEmployeeSsfList($employeeId);
     }
 }

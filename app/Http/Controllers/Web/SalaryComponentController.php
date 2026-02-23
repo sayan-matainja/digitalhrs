@@ -9,6 +9,7 @@ use App\Traits\CustomAuthorizesRequests;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
+use App\Models\SalaryComponent; //added
 
 class SalaryComponentController extends Controller
 {
@@ -153,5 +154,23 @@ class SalaryComponentController extends Controller
         }
     }
 
+    //added
+    /**
+     * Toggle taxable status of salary component
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function toggleTaxableStatus($id)
+    {
+        try {
+            $salaryComponent = SalaryComponent::findOrFail($id);
+            $salaryComponent->taxable = $salaryComponent->taxable == 1 ? 0 : 1;
+            $salaryComponent->save();
 
+            return redirect()->back()->with('success', 'Taxable status changed successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error changing taxable status: ' . $e->getMessage());
+        }
+    }
 }

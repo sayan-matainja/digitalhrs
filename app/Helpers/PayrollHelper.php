@@ -14,54 +14,113 @@ use Faker\Core\Number;
 
 class PayrollHelper
 {
+    //old
+    // public static function salaryTDSCalculator($maritalStatus, $annualIncome): array
+    // {
+    //     $count = 1;
+    //     $taxAmount = 0;
+    //     $tax1 = 0;
 
+    //     $taxSlabs = SalaryTDS::where([['marital_status', $maritalStatus], ['annual_salary_from', '<', $annualIncome]])
+    //         ->orderBy('tds_in_percent', 'desc')
+    //         ->get();
+
+
+    //     $slabCount = count($taxSlabs);
+    //     if ($slabCount > 0) {
+    //         foreach ($taxSlabs as $key => $taxSlab) {
+    //             if ($count) {
+    //                 $slab = $annualIncome - $taxSlab['annual_salary_from'];
+    //                 if ($key == $slabCount-1) {
+    //                     $tax1 = $slab * ($taxSlab['tds_in_percent'] / 100);
+    //                 }
+    //                 $taxAmount = $slab * ($taxSlab['tds_in_percent'] / 100);
+
+    //                 $count = 0;
+    //             } else {
+
+    //                 $slab = $taxSlab['annual_salary_to'] - $taxSlab['annual_salary_from'];
+
+    //                 if ($key == $slabCount-1) {
+    //                     $tax1 = $slab * ($taxSlab['tds_in_percent'] / 100);
+    //                 }
+    //                 $taxAmount += $slab * ($taxSlab['tds_in_percent'] / 100);
+    //             }
+
+
+    //         }
+    //     }
+
+    //     $monthlyTax = $taxAmount / 12;
+    //     $weeklyTax = $taxAmount / 52;
+
+    //     return [
+    //         'sst' => $tax1,
+    //         'total_tax' => round($taxAmount, 2),
+    //         'monthly_tax' => round($monthlyTax, 2),
+    //         'weekly_tax' => round($weeklyTax, 2),
+    //                 //'income_tax' => $taxAmount - $tax1,
+    //     ];
+
+    // }
+
+    //new
     public static function salaryTDSCalculator($maritalStatus, $annualIncome): array
     {
-        $count = 1;
-        $taxAmount = 0;
-        $tax1 = 0;
+        $totalTax = 0;
+        $sst = 0;
 
-        $taxSlabs = SalaryTDS::where([['marital_status', $maritalStatus], ['annual_salary_from', '<', $annualIncome]])
-            ->orderBy('tds_in_percent', 'desc')
-            ->get();
+        // Get all tax slabs (marital status ignored since removed from TDS config)
+        $taxSlabs = SalaryTDS::orderBy('annual_salary_from', 'asc')->get();
 
+        // If no tax slabs found, return zero tax
+        if ($taxSlabs->isEmpty()) {
+            return [
+                'sst' => 0,
+                'total_tax' => 0,
+                'monthly_tax' => 0,
+                'weekly_tax' => 0,
+            ];
+        }
 
-        $slabCount = count($taxSlabs);
-        if ($slabCount > 0) {
-            foreach ($taxSlabs as $key => $taxSlab) {
-                if ($count) {
-                    $slab = $annualIncome - $taxSlab['annual_salary_from'];
-                    if ($key == $slabCount-1) {
-                        $tax1 = $slab * ($taxSlab['tds_in_percent'] / 100);
-                    }
-                    $taxAmount = $slab * ($taxSlab['tds_in_percent'] / 100);
+        // Calculate tax progressively through each slab
+        foreach ($taxSlabs as $index => $slab) {
+            // Skip if income is below this slab's starting point
+            if ($annualIncome <= $slab->annual_salary_from) {
+                break;
+            }
 
-                    $count = 0;
-                } else {
+            // Determine the upper limit of this slab
+            $slabFrom = $slab->annual_salary_from;
+            $slabTo = $slab->annual_salary_to ?? PHP_INT_MAX;
 
-                    $slab = $taxSlab['annual_salary_to'] - $taxSlab['annual_salary_from'];
+            // Calculate how much of the income falls within this slab
+            $taxableInThisSlab = min($annualIncome, $slabTo) - $slabFrom;
 
-                    if ($key == $slabCount-1) {
-                        $tax1 = $slab * ($taxSlab['tds_in_percent'] / 100);
-                    }
-                    $taxAmount += $slab * ($taxSlab['tds_in_percent'] / 100);
-                }
+            // Ensure we don't have negative taxable amount
+            if ($taxableInThisSlab <= 0) {
+                continue;
+            }
 
+            // Calculate tax for this slab
+            $taxInThisSlab = $taxableInThisSlab * ($slab->tds_in_percent / 100);
+            $totalTax += $taxInThisSlab;
 
+            // Store first slab tax for SST exemption calculation
+            if ($index === 0) {
+                $sst = $taxInThisSlab;
             }
         }
 
-        $monthlyTax = $taxAmount / 12;
-        $weeklyTax = $taxAmount / 52;
+        $monthlyTax = $totalTax / 12;
+        $weeklyTax = $totalTax / 52;
 
         return [
-            'sst' => $tax1,
-            'total_tax' => round($taxAmount, 2),
+            'sst' => round($sst, 2),
+            'total_tax' => round($totalTax, 2),
             'monthly_tax' => round($monthlyTax, 2),
             'weekly_tax' => round($weeklyTax, 2),
-                    //'income_tax' => $taxAmount - $tax1,
         ];
-
     }
 
     public static function overTimeCalculator($employeeId, $grossSalary): array

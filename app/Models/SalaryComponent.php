@@ -35,6 +35,7 @@ class SalaryComponent extends Model
         'value_type',
         'annual_component_value',
         'status',
+        'taxable', //added
         'created_by',
         'updated_by',
         'apply_for_all'

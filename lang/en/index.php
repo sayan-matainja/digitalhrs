@@ -754,6 +754,8 @@ return [
     'tax_amount'=>'Tax Amount',
     'percent'=>'Percent',
     'tax_calculation_on_taxable_income'=>'Tax Calculation on Taxable Income',
+    'taxable' => 'Taxable',
+    'taxable_income_in_brackets' => '(Taxable Income)',
     'taxable_income'=>'Taxable Income',
     'ssf_contribution'=>'SSF Contribution',
     'ssf_contribution_salary'=>'SSF Contribution Salary',

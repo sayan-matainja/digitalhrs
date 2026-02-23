@@ -39,6 +39,9 @@
                                     <th class="text-center">{{ __('index.component_type') }}</th>
                                     <th class="text-center">{{ __('index.component_value') }}</th>
                                     <th class="text-center">{{ __('index.value_type') }}</th>
+
+                                    <th class="text-center">{{ __('index.taxable') }}</th>
+
                                     <th class="text-center">{{ __('index.status') }}</th>
                                     <th class="text-center">{{ __('index.action') }}</th>
                                 </tr>
@@ -57,6 +60,15 @@
                                             {{ ucfirst(\App\Models\SalaryComponent::VALUE_TYPE[$value->value_type])}}
                                         </td>
                                         <td class="text-center">{{ $value->annual_component_value  }}{{$value->value_type == 'fixed' ? '': '%'}}</td>
+
+                                        {{-- added --}}
+                                        <td class="text-center">
+                                            <label class="switch">
+                                                <input class="toggleTaxable" href="{{route('admin.salary-components.toggle-taxable',$value->id)}}"                                                    type="checkbox" {{($value->taxable) == 1 ?'checked':''}}>
+                                                <span class="slider round"></span>
+                                            </label>
+                                        </td>
+
                                         <td class="text-center">
                                             <label class="switch">
                                                 <input class="toggleStatus" href="{{route('admin.salary-components.toggle-status',$value->id)}}"
@@ -112,6 +124,28 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
+
+
+            // added
+            $('.toggleTaxable').change(function (event) {
+                event.preventDefault();
+                var taxable = $(this).prop('checked') === true ? 1 : 0;
+                var href = $(this).attr('href');
+                Swal.fire({
+                    title: 'Are you sure you want to change taxable status?',
+                    showDenyButton: true,
+                    confirmButtonText: `Yes`,
+                    denyButtonText: `No`,
+                    padding:'10px 50px 10px 50px',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = href;
+                    }else if (result.isDenied) {
+                        (taxable === 0)? $(this).prop('checked', true) :  $(this).prop('checked', false)
+                    }
+                })
+            })
 
             $('.toggleStatus').change(function (event) {
                 event.preventDefault();

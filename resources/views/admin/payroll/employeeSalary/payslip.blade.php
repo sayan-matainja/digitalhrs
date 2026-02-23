@@ -283,6 +283,9 @@
                                     </div>
                                     <div class="col-lg col-md-6 mb-2">
                                         <span class="h5" id="actual_salary">{{ $currency.' '. $totalEarning - $totalDeduction  }}</span>
+                                        <span class="text-danger">
+                                            {{ __('index.taxable_income_in_brackets') }}
+                                        </span>
                                     </div>
 
                                 </div>

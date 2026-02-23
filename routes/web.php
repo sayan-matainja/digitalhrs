@@ -363,6 +363,9 @@ Route::group([
         Route::get('salary-components/delete/{id}', [SalaryComponentController::class, 'delete'])->name('salary-components.delete');
         Route::get('salary-components/change-status/{id}', [SalaryComponentController::class, 'toggleSalaryComponentStatus'])->name('salary-components.toggle-status');
 
+        // added
+        Route::get('salary-components/toggle-taxable/{id}', [SalaryComponentController::class, 'toggleTaxableStatus'])->name('salary-components.toggle-taxable');
+
         /** Payment Methods route */
         Route::resource('payment-methods', PaymentMethodController::class,[
             'except' => ['destroy','show','edit']
