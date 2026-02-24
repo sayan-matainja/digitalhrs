@@ -30,8 +30,8 @@
                     @csrf
                     @method('PUT')
                     <input type="hidden" readonly name="employee_id" value ="{{$employee->id}}">
-                    <div class="payroll-fil" x-data="createEmployeeSalary('{{$percentType}}', {{ json_encode($salaryComponents) }}, {{ json_encode($employeeSalary) }})">
-
+                    {{-- <div class="payroll-fil" x-data="createEmployeeSalary('{{$percentType}}', {{ json_encode($salaryComponents) }}, {{ json_encode($employeeSalary) }})"> --}}
+                    <div class="payroll-fil" x-data="createEmployeeSalary('{{$percentType}}', {{ json_encode($salaryComponents) }}, {{ json_encode($employeeSalary) }}, {{ $pfDeduction }})">
                         <div class="d-flex align-items-center mb-3">
                             <div class="p-2 col-md-6">
                                 <label for="payroll_type" class="form-label">{{ __('index.payroll_type') }}</label>
@@ -155,6 +155,26 @@
                                 <tr>
                                     <td colspan="5"> <h4>{{ __('index.deductions') }}</h4></td>
                                 </tr>
+
+                                <!-- ✅ EPF DEDUCTION ROW -->
+                                <tr>
+                                    <td>{{ __('index.pf_deduction') }}</td>
+                                    <td>
+                                        <div style="display: flex;">
+                                            <input style="text-align:center; border:none; background: inherit;" type="text" readonly value="fixed" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td x-show="payment_type === 'weekly'">
+                                        <input style="text-align:center; border:none; background: inherit;" type="number" readonly value="{{ number_format($pfDeduction * 12 / 52, 2, '.', '') }}" class="form-control">
+                                    </td>
+                                    <td x-show="payment_type === 'monthly'">
+                                        <input style="text-align:center; border:none; background: inherit;" type="number" readonly value="{{ number_format($pfDeduction, 2, '.', '') }}" class="form-control">
+                                    </td>
+                                    <td>
+                                        <input style="text-align:center; border:none; background: inherit;" type="number" readonly value="{{ number_format($pfDeduction * 12, 2, '.', '') }}" class="form-control">
+                                    </td>
+                                </tr>
+
                                 <template x-for="(deduction, index) in deductions" :key="index">
                                     <tr>
                                         <td x-text="deduction.name"></td>

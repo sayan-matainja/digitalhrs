@@ -1,4 +1,5 @@
-function createEmployeeSalary(percentType, salaryComponents, employeeSalary) {
+// function createEmployeeSalary(percentType, salaryComponents, employeeSalary) {
+function createEmployeeSalary(percentType, salaryComponents, employeeSalary, pfDeduction = 0) {    // pfDeduction = 0 is added
     return {
         init() {
             // Initialize defaults
@@ -70,21 +71,39 @@ function createEmployeeSalary(percentType, salaryComponents, employeeSalary) {
         net_monthly_salary: 0,
         net_annual_salary: 0,
 
+        // calculateTotals() {
+        //     let totalInc = this.incomes.reduce((monthly, field) => monthly + Number(field.monthly || 0), 0);
+        //     this.monthly_total = Number(this.monthly_basic_salary) + Number(this.monthly_fixed_allowance) + Number(totalInc);
+        //     this.annual_total = Number(this.monthly_total * 12).toFixed(2);
+        //     this.weekly_total = Number(this.annual_total / 52).toFixed(2);
+
+        //     let totalDed = this.deductions.reduce((monthly, field) => monthly + Number(field.monthly || 0), 0);
+        //     this.total_monthly_deduction = Number(totalDed).toFixed(2);
+        //     this.total_annual_deduction = Number(this.deductions.reduce((annual, field) => annual + Number(field.annual || 0), 0)).toFixed(2);
+        //     this.total_weekly_deduction = Number(this.total_annual_deduction / 52).toFixed(2);
+
+        //     this.net_monthly_salary = Number(this.monthly_total - this.total_monthly_deduction).toFixed(2);
+        //     this.net_annual_salary = Number(this.annual_salary - this.total_annual_deduction).toFixed(2);
+        //     this.net_weekly_salary = Number(this.net_annual_salary / 52).toFixed(2);
+        // },
+
         calculateTotals() {
             let totalInc = this.incomes.reduce((monthly, field) => monthly + Number(field.monthly || 0), 0);
             this.monthly_total = Number(this.monthly_basic_salary) + Number(this.monthly_fixed_allowance) + Number(totalInc);
             this.annual_total = Number(this.monthly_total * 12).toFixed(2);
             this.weekly_total = Number(this.annual_total / 52).toFixed(2);
 
+            // ✅ ADD EPF to deductions
             let totalDed = this.deductions.reduce((monthly, field) => monthly + Number(field.monthly || 0), 0);
-            this.total_monthly_deduction = Number(totalDed).toFixed(2);
-            this.total_annual_deduction = Number(this.deductions.reduce((annual, field) => annual + Number(field.annual || 0), 0)).toFixed(2);
+            this.total_monthly_deduction = Number(totalDed + pfDeduction).toFixed(2);
+            this.total_annual_deduction = Number(this.deductions.reduce((annual, field) => annual + Number(field.annual || 0), 0) + (pfDeduction * 12)).toFixed(2);
             this.total_weekly_deduction = Number(this.total_annual_deduction / 52).toFixed(2);
 
             this.net_monthly_salary = Number(this.monthly_total - this.total_monthly_deduction).toFixed(2);
             this.net_annual_salary = Number(this.annual_salary - this.total_annual_deduction).toFixed(2);
             this.net_weekly_salary = Number(this.net_annual_salary / 52).toFixed(2);
         },
+
 
         updateFields() {
             this.salary_base = this.payroll_type == 'hourly';
