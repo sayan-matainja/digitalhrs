@@ -38,7 +38,7 @@
 
                 <div class="row align-items-center">
                     @if(!isset(auth()->user()->branch_id))
-                        <div class="col-xxl col-xl-3 col-md-6 mb-4">
+                        <div class="col-xl col-xl-3 col-md-6 mb-4">
                             <select class="form-select" id="branch_id" name="branch_id" required>
                                 <option selected disabled>{{ __('index.select_branch') }}</option>
                                 @if(isset($companyDetail))
@@ -50,24 +50,24 @@
                         </div>
                     @endif
                     <!-- Departments Field -->
-                    <div class="col-xxl col-xl-3 col-md-6 mb-4">
+                    <div class="col-xl col-xl-3 col-md-6 mb-4">
                         <select class="form-select" id="department_id" name="department_id">
                             <option value="" {{ !isset($filterParameters['department_id']) ? 'selected' : '' }}>{{ __('index.select_department') }}</option>
                         </select>
                     </div>
-                    <div class="col-xxl col-xl-3 col-md-6 mb-4">
+                    <div class="col-xl col-xl-3 col-md-6 mb-4">
                         <select class="form-select" id="requestedBy" name="requested_by">
                             <option value="" {{ !isset($filterParameters['requested_by']) ? 'selected' : '' }}>{{ __('index.select_employee') }}</option>
                         </select>
                     </div>
 
-                    <div id="leave-type-filter" class="col-xxl col-xl-3 col-md-6 mb-4" style="display: {{ $activeTab == 'time' ? 'none' : 'block' }};">
+                    <div id="leave-type-filter" class="col-xl col-xl-3 col-md-6 mb-4" style="display: {{ $activeTab == 'time' ? 'none' : 'block' }};">
                         <select class="form-select form-select-lg" name="leave_type" id="leaveType">
                             <option value="" {{ !isset($filterParameters['leave_type']) ? 'selected' : '' }}>{{ __('index.all_leave_type') }}</option>
                         </select>
                     </div>
 
-                    <div class="col-xxl col-xl-3 col-md-6 mb-4">
+                    <div class="col-xl col-xl-3 col-md-6 mb-4">
                         <input type="number" min="{{ $filterData['min_year'] }}"
                                max="{{ $filterData['max_year'] }}" step="1"
                                placeholder="{{ __('index.leave_requested_year') }} : {{ $filterData['min_year'] }}"
@@ -76,7 +76,7 @@
                                class="form-control">
                     </div>
 
-                    <div class="col-xxl col-xl-3 col-md-6 mb-4">
+                    <div class="col-xl col-xl-3 col-md-6 mb-4">
                         <select class="form-select form-select-lg" name="month" id="month">
                             <option value="" {{ !isset($filterParameters['month']) ? 'selected' : '' }}>{{ __('index.all_month') }}</option>
                             @foreach($months as $key => $value)
@@ -87,7 +87,7 @@
                         </select>
                     </div>
 
-                    <div class="col-xxl col-xl-3 col-md-6 mb-4">
+                    <div class="col-xl col-xl-3 col-md-6 mb-4">
                         <select class="form-select form-select-lg" name="status" id="status">
                             <option value="" {{ !isset($filterParameters['status']) ? 'selected' : '' }}>{{ __('index.all_status') }}</option>
                             @foreach(LeaveRequestMaster::STATUS as $value)
@@ -96,7 +96,7 @@
                         </select>
                     </div>
 
-                    <div class="col-xxl col-xl-3 mb-4">
+                    <div class="col-xl col-xl-3 mb-4">
                         <div class="d-flex">
                             <button type="submit" class="btn btn-block btn-secondary me-2">{{ __('index.filter') }}</button>
                             <a class="btn btn-block btn-primary reset" href="{{ route('admin.leave-request.index') }}">{{ __('index.reset') }}</a>
