@@ -322,7 +322,7 @@ return [
     'user_remove'=>'User Detail Removed Successfully',
     'workspace_change'=>'User Workspace Changed Successfully',
     'user_password_change'=>'User Password Changed Successfully',
-    'force_logout'=>'Force log out successFull',
+    'force_logout'=>'Force log out successful',
     'employee_leave_not_found'=>'Employee Leave Type Detail Not Found',
     'employee_leave_removed'=>'User Leave Type Removed Successfully',
 
