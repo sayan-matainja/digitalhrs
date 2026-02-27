@@ -1,32 +1,27 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+
     $(document).ready(function () {
 
-        console.log('Team Meeting Scripts Loaded');
 
-        // Only initialize if elements exist
-        if ($("#team_meeting").length > 0) {
-            $("#team_meeting").select2({
-                placeholder: "{{ __('index.select_meeting_participants') }}"
-            });
-        }
+        $("#team_meeting").select2({
+            placeholder: "{{ __('index.select_meeting_participants') }}"
+        });
 
-        if ($("#department_id").length > 0) {
-            $("#department_id").select2({
+        $("#department_id").select2({
                 placeholder: "{{ __('index.select_department') }}"
             });
-        }
 
-        // Nepali DatePicker - only if elements exist
-        if ($('.meetingDate').length > 0) {
-            $('.meetingDate').nepaliDatePicker({
-                language: "english",
-                dateFormat: "MM/DD/YYYY",
-                ndpYear: true,
-                ndpMonth: true,
-                ndpYearCount: 20,
-                disableAfter: "2089-12-30",
-            });
-        }
+
+        $('.meetingDate').nepaliDatePicker({
+            language: "english",
+            dateFormat: "MM/DD/YYYY",
+            ndpYear: true,
+            ndpMonth: true,
+            ndpYearCount: 20,
+            disableAfter: "2089-12-30",
+        });
 
         $.ajaxSetup({
             headers: {
@@ -68,64 +63,24 @@
             })
         });
 
-        // Eye icon click handler
         $('body').on('click', '.showMeetingDescription', function (event) {
             event.preventDefault();
 
-            console.log('Eye icon clicked');
-
             let url = $(this).data('href');
-            console.log('URL:', url);
 
-            $.ajax({
-                url: url,
-                method: 'GET',
-                beforeSend: function() {
-                    Swal.fire({
-                        title: 'Loading...',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-                },
-                success: function (data) {
-                    console.log('Response:', data);
+            $.get(url, function (data) {
+                $('.meetingTitle').html('Meeting Detail');
+                $('.title').text(data.data.title);
+                $('.date').text(data.data.meeting_date);
+                $('.time').text(data.data.time);
+                $('.venue').text(data.data.venue);
+                $('.publish_date').text(data.data.meeting_published_at);
+                $('.description').text(data.data.description);
+                $('.creator').text(data.data.creator);
+                $('.image').attr('src', data.data.image);
 
-                    Swal.close();
-
-                    // Populate modal
-                    $('.meetingTitle').html('Meeting Detail');
-                    $('.title').text(data.data.title || 'N/A');
-                    $('.date').text(data.data.meeting_date || 'N/A');
-                    $('.time').text(data.data.time || 'N/A');
-                    $('.venue').text(data.data.venue || 'N/A');
-                    $('.publish_date').text(data.data.meeting_published_at || 'N/A');
-                    $('.description').text(data.data.description || 'No description available');
-                    $('.creator').text(data.data.creator || 'N/A');
-
-                    // Handle image
-                    if (data.data.image && data.data.image !== '') {
-                        $('.image').attr('src', data.data.image).show();
-                    } else {
-                        $('.image').hide();
-                    }
-
-                    // Show modal
-                    $('#meetingDetail').modal('show');
-                },
-                error: function (xhr, status, error) {
-                    Swal.close();
-
-                    console.error('AJAX Error:', xhr.responseText);
-
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to load meeting details. Please try again.'
-                    });
-                }
-            });
+                $('#meetingDetail').modal('show');
+            })
         });
 
         $('.reset').click(function (event) {
@@ -137,13 +92,13 @@
 
     });
 
-    // Department/Employee dropdown logic
     $(document).ready(function () {
 
         const isAdmin = {{ auth('admin')->check() ? 'true' : 'false' }};
         const defaultBranchId = {{ auth()->user()->branch_id ?? 'null' }};
         const branchId = "{{ $filterParameters['branch_id'] ?? null }}";
 
+        // Ensure filter parameters are arrays and normalize to strings
         const filterDepartmentIds = Array.isArray(JSON.parse('{!! json_encode($filterParameters['department_id'] ?? []) !!}'))
             ? JSON.parse('{!! json_encode($filterParameters['department_id'] ?? []) !!}').map(String)
             : [String(JSON.parse('{!! json_encode($filterParameters['department_id'] ?? []) !!}'))].filter(Boolean);
@@ -155,8 +110,8 @@
         const formEmployeeIds = {!! isset($participatorIds) ? json_encode($participatorIds) : '[]' !!}.map(String);
 
         const departmentIds = filterDepartmentIds.length > 0 ? filterDepartmentIds : formDepartmentIds;
-        let employeeIds = filterEmployeeIds.length > 0 ? filterEmployeeIds : formEmployeeIds;
-
+        let employeeIds = filterEmployeeIds.length > 0 ? filterEmployeeIds : formEmployeeIds; // Make this mutable
+        // Common function to load departments
         const preloadDepartments = async (selectedBranchId) => {
             if (!selectedBranchId) return;
 
@@ -187,6 +142,7 @@
             }
         };
 
+        // Common function to load and merge employees
         const preloadEmployees = async () => {
             const selectedDepartments = $('#department_id').val() || [];
             if (selectedDepartments.length === 0) {
@@ -194,6 +150,7 @@
                 return;
             }
 
+            // Store current employee selections before clearing
             const currentEmployeeSelections = $('#team_meeting').val() || [];
 
             try {
@@ -207,13 +164,14 @@
                 });
 
                 const data = await response.json();
-                $('#team_meeting').empty();
+                $('#team_meeting').empty(); // Clear options every time
 
                 if (!data || data.length === 0) {
                     $('#team_meeting').append('<option disabled>{{ __("index.no_employees_found") }}</option>');
                     return;
                 }
 
+                // Repopulate with employees, preserving valid selections
                 data.forEach(employee => {
                     const employeeIdStr = String(employee.id);
                     const isSelected = currentEmployeeSelections.includes(employeeIdStr) || employeeIds.includes(employeeIdStr);
@@ -224,6 +182,7 @@
                 `);
                 });
 
+                // Update employeeIds to reflect current selections
                 employeeIds = $('#team_meeting').val() || [];
             } catch (error) {
                 $('#team_meeting').append('<option disabled>{{ __("index.error_loading_employees") }}</option>');
@@ -256,17 +215,12 @@
             $('#department_id').on('change', preloadEmployees);
         };
 
+        // Initialize everything
         initializeDropdowns();
     });
 
-    // Notification button - only if exists
-    var notificationBtn = document.getElementById('withTeamNotification');
-    if (notificationBtn) {
-        notificationBtn.addEventListener('click', function (event) {
-            var teamNotificationInput = document.getElementById('teamNotification');
-            if (teamNotificationInput) {
-                teamNotificationInput.value = 1;
-            }
-        });
-    }
+    document.getElementById('withTeamNotification').addEventListener('click', function (event) {
+
+        document.getElementById('teamNotification').value = 1;
+    });
 </script>
