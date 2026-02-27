@@ -89,12 +89,13 @@
                                 {{ __('index.include_tds') }}
                             </label>
                         </div>
-                        <div class="col-lg col-md-4 mb-3 form-check">
+                        {{-- Temporay hidden ssf --}}
+                        {{-- <div class="col-lg col-md-4 mb-3 form-check">
                             <input type="checkbox" {{ isset($filterData['include_ssf']) && $filterData['include_ssf'] == 0 ? '' : 'checked' }} name="include_ssf" value="1" id="include_tada">
                             <label class="form-check-label" for="includeTada">
                                 {{ __('index.include_ssf') }}
                             </label>
-                        </div>
+                        </div> --}}
                         <div class="col-lg col-md-4 mb-3 form-check">
                             <input type="checkbox" {{ isset($filterData['include_pf']) && $filterData['include_pf'] == 0 ? '' : 'checked' }} name="include_pf" value="1" id="include_pf">
                             <label class="form-check-label" for="includePF">

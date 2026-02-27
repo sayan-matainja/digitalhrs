@@ -195,7 +195,9 @@ class EmployeeSalaryController extends Controller
                 $filterData['include_tada'] =  $filterData['include_tada'] ?? 0;
                 $filterData['include_advance_salary'] =  $filterData['include_advance_salary'] ?? 0;
                 $filterData['include_tds'] =  $filterData['include_tds'] ?? 0;
-                $filterData['include_ssf'] =  $filterData['include_ssf'] ?? 0;
+                //temporay hidden ssf
+                // $filterData['include_ssf'] =  $filterData['include_ssf'] ?? 0;
+                $filterData['include_ssf'] = 0;
                 $filterData['include_pf'] =  $filterData['include_pf'] ?? 0;
                 $filterData['attendance'] =  $filterData['attendance'] ?? 0;  // ✅ ADD THIS LINE
 

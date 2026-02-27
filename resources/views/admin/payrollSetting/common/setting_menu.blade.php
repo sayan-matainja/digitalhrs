@@ -20,7 +20,7 @@
                 </a>
             </li>
         @endcan
-        {{-- hidden --}}
+        {{-- temporary hidden ssf --}}
         {{-- @can('ssf')
             <li class="nav-item {{request()->routeIs('admin.ssf.*') ? 'bg-danger' : '' }} w-100"
                 style="border-bottom: 1px solid #ede7e7;">
