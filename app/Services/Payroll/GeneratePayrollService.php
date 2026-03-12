@@ -318,12 +318,12 @@ class GeneratePayrollService
                         $weeklySalary += $overTimeEarning;
 
                         /** undertime calculation */
-//                        $underTimeRate = PayrollHelper::underTimeCalculator($grossSalary);
-//                        if ($underTimeRate > 0) {
-//                            $totalUnderTime += $attendanceData['totalUnderTime'];
-//                        }
-//                        $underTimeDeduction = ($attendanceData['totalUnderTime'] / 60) * $underTimeRate;
-//                        $weeklySalary -= $underTimeDeduction;
+                        //                        $underTimeRate = PayrollHelper::underTimeCalculator($grossSalary);
+                        //                        if ($underTimeRate > 0) {
+                        //                            $totalUnderTime += $attendanceData['totalUnderTime'];
+                        //                        }
+                        //                        $underTimeDeduction = ($attendanceData['totalUnderTime'] / 60) * $underTimeRate;
+                        //                        $weeklySalary -= $underTimeDeduction;
 
 
                         /** advance salary adjustment */
@@ -439,9 +439,10 @@ class GeneratePayrollService
                         /** check if attendance data is present, if not don't generate payroll */
                         $attendanceData = AttendanceHelper::getMonthlyDetail($employee->employee_id, $isBsEnabled, $filterData['year'], $filterData['month']);
 
-                        if ($attendanceData['totalPresent'] == 0) {
-                            continue;
-                        }
+                        //attendance optional
+                        // if ($attendanceData['totalPresent'] == 0) {
+                        //     continue;
+                        // }ghfjjvhnb
 
                         $monthlyHourRate = 0;
                         $monthlyWorkingHours = 0;

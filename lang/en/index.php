@@ -1494,7 +1494,7 @@ return [
     'router_lists'=>'Router List',
     'meeting_list'=>'Meeting Lists',
     'app_qr'=>'App QR',
-    'digital_hr_dashboard'=>'Digital HR Dashboard',
+    'digital_hr_dashboard'=>'Patjeda Group',
     'training_type_list'=>'Training Type List',
     'time_leave_list'=>'Time leave Request Lists',
     'support_list'=>'Supports Lists',

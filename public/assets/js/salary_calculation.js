@@ -10,7 +10,7 @@ function createEmployeeSalary(percentType, salaryComponents, employeeSalary, pfD
             this.hour_rate = employeeSalary?.hour_rate || '';
             this.weekly_hours = employeeSalary?.weekly_hours || '';
             this.monthly_hours = employeeSalary?.monthly_hours || '';
-            this.basic_salary_value = employeeSalary?.basic_salary_value || 60;
+            this.basic_salary_value = employeeSalary?.basic_salary_value || 85;
             this.basic_salary_type = employeeSalary?.basic_salary_type || percentType;
             this.monthly_basic_salary = employeeSalary?.monthly_basic_salary || 0;
             this.annual_basic_salary = employeeSalary?.annual_basic_salary || 0;
@@ -53,7 +53,7 @@ function createEmployeeSalary(percentType, salaryComponents, employeeSalary, pfD
         monthly_hours: '',
         annual_salary: '',
         salary_group_id: '',
-        basic_salary_value: 60,
+        basic_salary_value: 85,
         basic_salary_type: percentType,
         monthly_basic_salary: 0,
         annual_basic_salary: 0,
