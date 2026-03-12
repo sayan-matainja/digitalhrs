@@ -442,7 +442,7 @@ class GeneratePayrollService
                         //attendance optional
                         // if ($attendanceData['totalPresent'] == 0) {
                         //     continue;
-                        // }ghfjjvhnb
+                        // }
 
                         $monthlyHourRate = 0;
                         $monthlyWorkingHours = 0;
