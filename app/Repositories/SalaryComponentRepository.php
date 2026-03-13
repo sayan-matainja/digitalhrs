@@ -47,11 +47,20 @@ class SalaryComponentRepository
         return $salaryComponentDetail->delete();
     }
 
+    //old
+    // public function pluckAllSalaryComponentLists()
+    // {
+    //     return SalaryComponent::active()
+    //         ->where('apply_for_all','=',0)
+    //         ->where('status','=',1)
+    //         ->pluck('name','id')
+    //         ->toArray();
+    // }
+    
+    //new
     public function pluckAllSalaryComponentLists()
     {
-        return SalaryComponent::active()
-            ->where('apply_for_all','=',0)
-            ->where('status','=',1)
+        return SalaryComponent::where('status','=',1)
             ->pluck('name','id')
             ->toArray();
     }
