@@ -264,7 +264,7 @@
                     </select>
                 </div>
 
-                <div class="col-lg-4 col-md-6 mb-3">
+                {{-- <div class="col-lg-4 col-md-6 mb-3">
                     <label for="employment_type" class="form-label">{{ __('index.employment_type') }}
                     </label>
                     <select class="form-select" id="employment_type" name="employment_type">
@@ -275,6 +275,21 @@
                             <option
                                 value="{{$value}}" {{ isset($userDetail) && ($userDetail->employment_type ) == $value || old('employment_type') == $value ? 'selected': '' }}>
                                 {{ucfirst($value)}}</option>
+                        @endforeach
+                    </select>
+                </div> --}}
+
+                {{-- added✅ --}}
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label for="employment_type" class="form-label">{{ __('index.employment_type') }}</label>
+                    <select class="form-select" id="employment_type" name="employment_type">
+                        <option value="" {{ (!isset($userDetail->employment_type) || $userDetail->employment_type == '') && !old('employment_type') ? 'selected' : '' }} disabled>
+                            {{ __('index.select_employment_type') }}
+                        </option>
+                        @foreach(User::EMPLOYMENT_TYPE as $value)
+                            <option value="{{$value}}" {{ (isset($userDetail->employment_type) && $userDetail->employment_type == $value) || old('employment_type') == $value ? 'selected' : '' }}>
+                                {{ucfirst($value)}}
+                            </option>
                         @endforeach
                     </select>
                 </div>

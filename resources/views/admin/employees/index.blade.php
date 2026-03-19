@@ -8,6 +8,13 @@
 @section('button')
     @can('create_employee')
         <div class="float-md-end d-flex align-items-center gap-2 justify-content-center">
+            {{-- added ✅ --}}
+            <a href="{{ route('admin.employees.download-template') }}">
+                <button class="btn btn-success d-flex align-items-center gap-2">
+                    <i class="link-icon" data-feather="download"></i>Download Template
+                </button>
+            </a>
+
             <a href="{{ route('admin.employees.create') }}">
                 <button class="btn btn-primary d-flex align-items-center gap-2">
                     <i class="link-icon" data-feather="plus"></i>{{ __('index.add_employee') }}
@@ -131,6 +138,24 @@
                     </div>
 
                     {{-- ACTION BUTTONS --}}
+                    {{-- <div class="col-12 mb-4">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <button type="submit" name="action" value="filter" class="btn btn-success">
+                                {{ __('index.filter') }}
+                            </button>
+                            @can('create_employee')
+                                <button type="button" id="export_employee" data-href="{{ route('admin.employees.index') }}"
+                                    class="btn btn-secondary">
+                                    {{ __('index.export_csv') }}
+                                </button>
+                            @endcan
+                            <a class="btn btn-primary" href="{{ route('admin.employees.index') }}">
+                                {{ __('index.reset') }}
+                            </a>
+                        </div>
+                    </div> --}}
+
+                    {{-- ACTION BUTTONS ✅--}}
                     <div class="col-12 mb-4">
                         <div class="d-flex align-items-center gap-2 flex-wrap">
                             <button type="submit" name="action" value="filter" class="btn btn-success">
@@ -140,6 +165,10 @@
                                 <button type="button" id="export_employee" data-href="{{ route('admin.employees.index') }}"
                                     class="btn btn-secondary">
                                     {{ __('index.export_csv') }}
+                                </button>
+
+                                <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#bulkUploadModal">
+                                    <i class="link-icon" data-feather="upload"></i> Import CSV
                                 </button>
                             @endcan
                             <a class="btn btn-primary" href="{{ route('admin.employees.index') }}">
@@ -341,6 +370,66 @@
         </div>
 
     </section>
+
+    {{-- Bulk Upload Modal ✅--}}
+    <div class="modal fade" id="bulkUploadModal" tabindex="-1" aria-labelledby="bulkUploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bulkUploadModalLabel">Bulk Upload Employees</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('admin.employees.bulk-upload') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="alert alert-info">
+                            <strong>Instructions:</strong>
+                            <ol class="mb-0 mt-2">
+                                <li>Click "Download Template" button to get the CSV template</li>
+                                <li>Fill in employee data following the example row format</li>
+                                <li>Make sure Branch, Department names match exactly with existing records</li>
+                                <li>Date format: YYYY-MM-DD (e.g., 2024-01-15)</li>
+                                <li>Save the file and upload it here</li>
+                            </ol>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="csv_file" class="form-label">Select CSV File <span class="text-danger">*</span></label>
+                            <input type="file" name="csv_file" id="csv_file" class="form-control" accept=".csv" required>
+                            <small class="text-muted">Maximum file size: 5MB</small>
+                        </div>
+
+                        @if(session('upload_errors'))
+                            <div class="alert alert-warning">
+                                <strong>Upload completed with errors:</strong>
+                                <ul class="mb-0 mt-2" style="max-height: 300px; overflow-y: auto;">
+                                    @foreach(session('upload_errors') as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="link-icon" data-feather="upload"></i> Upload CSV
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @if(session('upload_errors'))
+        <script>
+            // Auto open modal if there were upload errors
+            document.addEventListener('DOMContentLoaded', function() {
+                var myModal = new bootstrap.Modal(document.getElementById('bulkUploadModal'));
+                myModal.show();
+            });
+        </script>
+    @endif
 
     @include('admin.employees.common.password')
 @endsection

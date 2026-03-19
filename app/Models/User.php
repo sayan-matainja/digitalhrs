@@ -24,7 +24,7 @@ class User extends Authenticatable
     const RECORDS_PER_PAGE = 20;
     const GENDER = ['male', 'female', 'others'];
     const STATUS = ['pending', 'verified', 'rejected', 'suspended'];
-    const EMPLOYMENT_TYPE = ['contract', 'permanent', 'temporary'];
+    const EMPLOYMENT_TYPE = ['Permanent','Contract','Temporary'];
     const USER_TYPE = ['field', 'nonField'];
     const DEVICE_TYPE = ['android', 'ios', 'web'];
     const ANDROID = 'android';

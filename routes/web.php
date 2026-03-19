@@ -168,6 +168,11 @@ Route::group([
         /** Employee Location Logs */
         Route::get('employee/location-logs', [UserController::class, 'logs'])->name('employee.log');
         /** Employees route */
+        // CSV BULK UPLOAD ROUTES ✅
+        Route::get('employees/download-template', [UserController::class, 'downloadTemplate'])->name('employees.download-template');
+        Route::post('employees/bulk-upload', [UserController::class, 'bulkUpload'])->name('employees.bulk-upload');
+
+
         Route::resource('employees', UserController::class);
         Route::get('employees/toggle-status/{id}', [UserController::class, 'toggleStatus'])->name('employees.toggle-status');
         Route::get('employees/toggle-holiday-checkin/{id}', [UserController::class, 'toggleHolidayCheckIn'])->name('employees.toggle-holiday-checkin');
