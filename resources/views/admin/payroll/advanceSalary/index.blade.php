@@ -116,7 +116,8 @@
                         @forelse($advanceSalaryRequestLists as $key => $value)
                             <tr>
                                 <td>{{(($advanceSalaryRequestLists->currentPage()- 1 ) * $advanceSalaryRequestLists->perPage() + (++$key))}} </td>
-                                <td>{{($value->requestedBy->name)}}</td>
+                                {{-- <td>{{($value->requestedBy->name)}}</td> --}}
+                                <td>{{$value->requestedBy ? $value->requestedBy->name : 'N/A'}}</td>
                                 <td class="text-center">{{number_format($value->requested_amount)}}</td>
 
                                 <td class="text-center">{{ isset($value->advance_requested_date) ? \App\Helpers\AppHelper::formatDateForView($value->advance_requested_date) : 'N/A'}}</td>

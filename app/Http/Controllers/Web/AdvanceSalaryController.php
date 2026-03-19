@@ -35,9 +35,13 @@ class AdvanceSalaryController extends Controller
                 'status' => $request->status ?? null,
                 'month' => $request->month ?? null
             ];
+            // $select = ['*'];
+            // $with = [];
+            // $advanceSalaryRequestLists = $this->advanceSalaryService->getAllAdvanceSalaryDetailPaginated($filterParameters,$select,$with);
             $select = ['*'];
-            $with = [];
+            $with = ['requestedBy:id,name'];
             $advanceSalaryRequestLists = $this->advanceSalaryService->getAllAdvanceSalaryDetailPaginated($filterParameters,$select,$with);
+            
             $months = AppHelper::getMonthsList();
             $with = ['branches:id,name'];
             $select = ['id', 'name'];
