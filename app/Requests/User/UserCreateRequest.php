@@ -47,13 +47,13 @@ class UserCreateRequest extends FormRequest
             'first_name' => 'required|string|max:100|min:2',
             'middle_name' => 'nullable|string|max:100',
 
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:4',
-            'username' => 'required|string|unique:users',
+            'email' => 'nullable|email|unique:users',
+            'password' => 'nullable|string|min:4',
+            'username' => 'nullable|string|unique:users',
             'address' => 'nullable',
             'dob' => 'nullable|date|before:today',
             'phone' => 'nullable|numeric',
-            'nin' => 'required|numeric',
+            'nin' => 'nullable|numeric',
             'gender' => ['nullable', 'required_unless:role_id,1', 'string', Rule::in(User::GENDER)],
             'marital_status' => ['nullable', 'required_unless:role_id,1', 'string', Rule::in(User::MARITAL_STATUS)],
             'employment_type' => ['nullable', 'required_unless:role_id,1', 'string', Rule::in(User::EMPLOYMENT_TYPE)],
@@ -61,7 +61,7 @@ class UserCreateRequest extends FormRequest
             'role_id' => 'required|exists:roles,id',
             'branch_id' => 'nullable|exists:branches,id',
             'department_id' => 'nullable|exists:departments,id',
-            'post_id' => 'required|exists:posts,id',
+            'post_id' => 'nullable|exists:posts,id',
             'supervisor_id' => 'nullable|exists:users,id',
             'office_time_id' => 'nullable|exists:office_times,id',
 
@@ -75,7 +75,7 @@ class UserCreateRequest extends FormRequest
             'leave_allocated' => 'nullable|numeric|gte:0',
             'remarks' => 'nullable|string|max:1000',
             'workspace_type' => ['nullable', 'boolean', Rule::in([1, 0])],
-            'avatar' => ['required', 'file', 'mimes:jpeg,png,jpg,webp', 'max:5048'],
+            'avatar' => ['nullable', 'file', 'mimes:jpeg,png,jpg,webp', 'max:5048'],
             'allow_holiday_check_in' => ['nullable'],
         ];
     }

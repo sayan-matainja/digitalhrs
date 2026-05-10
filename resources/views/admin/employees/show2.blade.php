@@ -73,12 +73,24 @@
                         <div class="d-md-flex align-items-center justify-content-between mb-2 border-bottom pb-2">
                             <div class="w-100 py-2 d-flex align-items-center">
                                 <label class="fw-bolder mb-0 text-uppercase w-45 border-end me-4">{{ __('index.phone_number') }}:</label>
-                                <p class="d-inline-block">{{ $userDetail->phone }}</p>
+                                <p class="d-inline-block">{{ $userDetail->phone ?? __('index.not_available') }}</p>
                             </div>
 
                             <div class="w-100 py-2 d-flex align-items-center">
                                 <label class="fw-bolder mb-0 text-uppercase w-45 border-end me-4">{{ __('index.date_of_birth') }}:</label>
-                                <p class="d-inline-block"> {{ isset($userDetail->dob) ? \App\Helpers\AppHelper::formatDateForView($userDetail->dob) : '' }}</p>
+                                <p class="d-inline-block"> {{ isset($userDetail->dob) ? \App\Helpers\AppHelper::formatDateForView($userDetail->dob) : __('index.not_available') }}</p>
+                            </div>
+                        </div>
+
+                        <div class="d-md-flex align-items-center justify-content-between mb-2 border-bottom pb-2">
+                            <div class="w-100 py-2 d-flex align-items-center">
+                                <label class="fw-bolder mb-0 text-uppercase w-45 border-end me-4">{{ __('index.nin') }}:</label>
+                                <p class="d-inline-block">{{ (!empty($userDetail->nin) ? $userDetail->nin : __('index.not_available')) }}</p>
+                            </div>
+
+                            <div class="w-100 py-2 d-flex align-items-center">
+                                <label class="fw-bolder mb-0 text-uppercase w-45 border-end me-4">{{ __('index.bvn') }}:</label>
+                                <p class="d-inline-block">{{ $userDetail->accountDetail->bvn ?? __('index.not_available') }}</p>
                             </div>
                         </div>
 

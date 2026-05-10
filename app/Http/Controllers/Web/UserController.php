@@ -1006,20 +1006,25 @@ class UserController extends Controller
                         $openingTime = trim($shiftParts[0]);
                         $closingTime = trim($shiftParts[1]);
 
+                        // Convert 12-hour format to 24-hour format for database storage
+                        $openingTime24 = date("H:i:s", strtotime($openingTime));
+                        $closingTime24 = date("H:i:s", strtotime($closingTime));
+
                        $office = \App\Models\OfficeTime::where([
                             'company_id' => $companyId,
-                            'opening_time' => $openingTime,
-                            'closing_time' => $closingTime,
+                            'branch_id' => $branchId,
+                            'opening_time' => $openingTime24,
+                            'closing_time' => $closingTime24,
                             'is_active' => 1,
                         ])->first();
-                        
+
                          if (!$office) {
                             $office = \App\Models\OfficeTime::create([
                                 'company_id' => $companyId,
-                                'opening_time' => $openingTime,
-                                'closing_time' => $closingTime,
+                                'opening_time' => $openingTime24,
+                                'closing_time' => $closingTime24,
                                 'shift' => $openingTime . ' - ' . $closingTime,
-                                'category' => "Full Timer",
+                                'category' => "full_timer",
                                 'branch_id' => $branchId,
                                 'is_active' => 1,
                             ]);

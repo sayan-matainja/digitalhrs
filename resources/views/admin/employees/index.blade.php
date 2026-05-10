@@ -243,18 +243,18 @@
                                     <td>{{ $value->surname ?? 'N/A' }}</td>
                                     <td>{{ $value->first_name ?? 'N/A' }}</td>
                                     <td>{{ $value->middle_name ?? 'N/A' }}</td>
-                                    <td>{{ $value->nin ?? 'N/A' }}</td>
-                                    <td>{{ $value->accountDetail->bvn ?? 'N/A' }}</td>
+                                    <td>{{ (!empty($value->nin) ? $value->nin : 'N/A') }}</td>
+                                    <td>{{ $value->accountDetail && $value->accountDetail->bvn ? $value->accountDetail->bvn : 'N/A' }}</td>
                                     <td>{{ $value->dob ? \Carbon\Carbon::parse($value->dob)->format('d/m/Y') : 'N/A' }}
                                     </td>
                                     <td>{{ $value->phone ?? 'N/A' }}</td>
-                                    <td>{{ $value->email ?? 'N/A' }}</td>
+                                    <td>{{ ($value->email && !str_starts_with($value->email, 'no-email-')) ? $value->email : 'N/A' }}</td>
                                     <td>{{ $value->joining_date ? \Carbon\Carbon::parse($value->joining_date)->format('d/m/Y') : 'N/A' }}
                                     </td>
-                                    <td>{{ $value->employment_type ? ucfirst($value->employment_type) : 'N/A' }}</td>
+                                    <td>{{ (!empty($value->employment_type) ? ucfirst($value->employment_type) : 'N/A') }}</td>
 
                                     <td>{{ $value->supervisor ? ucfirst($value->supervisor->name) : 'N/A' }}</td>
-                                    <td>{{ $value->branch ? ucfirst($value->branch->name) : ($value->company ? ucfirst($value->company->name) : 'N/A') }}
+                                    <td>{{ $value->branch ? ucfirst($value->branch->name) : 'N/A' }}
                                     </td>
                                     <td>{{ $value->department ? ucfirst($value->department->dept_name) : 'N/A' }}</td>
                                     <td>{{ $value->post ? ucfirst($value->post->post_name) : 'N/A' }}</td>
@@ -266,11 +266,11 @@
                                     <!--<td>{{ $value->officeTime ? ucfirst($value->officeTime->shift) : 'N/A' }}</td>-->
                                     <td>{{ $value->officeTime ? $value->officeTime->opening_time . ' - ' . $value->officeTime->closing_time : 'N/A' }}
                                     </td>
-                                    <td>{{ $value->accountDetail->bank_name ?? 'N/A' }}</td>
-                                    <td>{{ $value->accountDetail->bank_account_no ?? 'N/A' }}</td>
-                                    <td>{{ $value->accountDetail->bank_account_type ? ucfirst($value->accountDetail->bank_account_type) : 'N/A' }}
+                                    <td>{{ $value->accountDetail && $value->accountDetail->bank_name ? $value->accountDetail->bank_name : 'N/A' }}</td>
+                                    <td>{{ $value->accountDetail && $value->accountDetail->bank_account_no ? $value->accountDetail->bank_account_no : 'N/A' }}</td>
+                                    <td>{{ $value->accountDetail && $value->accountDetail->bank_account_type ? ucfirst($value->accountDetail->bank_account_type) : 'N/A' }}
                                     </td>
-                                    <td>{{ $value->accountDetail->account_holder ?? 'N/A' }}</td>
+                                    <td>{{ $value->accountDetail && $value->accountDetail->account_holder ? $value->accountDetail->account_holder : 'N/A' }}</td>
                                     <td class="text-center">
                                         <label class="switch">
                                             <input class="toggleHolidayCheckIn"
@@ -309,7 +309,7 @@
                                                             </a>
                                                         </li>
                                                     @endcan
-                                                    @can('delete_employee')
+                                                    {{-- @can('delete_employee')
                                                         @php $authId = auth('admin')->id() ?? auth()->id(); @endphp
                                                         @if ($value->id != $authId && $value->id != 1)
                                                             <li class="dropdown-item py-2">
@@ -320,7 +320,34 @@
                                                                 </a>
                                                             </li>
                                                         @endif
+                                                    @endcan --}}
+
+                                                    @can('delete_employee')
+                                                        @php
+                                                            // Checking if logged in as admin (from admins table) or as regular user (from users table)
+                                                            $isAdminLogin = auth('admin')->check();
+                                                            $isUserLogin = auth()->check();
+
+                                                            // Only block deletion if:
+                                                            // 1. Logged in as regular user AND trying to delete yourself
+                                                            $canDelete = true;
+                                                            if ($isUserLogin && !$isAdminLogin) {
+                                                                // Regular user login - prevent deleting yourself
+                                                                $canDelete = ($value->id != auth()->id());
+                                                            }
+                                                            // If logged in as admin, allow deleting any employee
+                                                        @endphp
+                                                        @if ($canDelete)
+                                                            <li class="dropdown-item py-2">
+                                                                <a class="deleteEmployee"
+                                                                    data-href="{{ route('admin.employees.delete', $value->id) }}">
+                                                                    <button
+                                                                        class="btn btn-primary btn-xs">{{ __('index.delete_user') }}</button>
+                                                                </a>
+                                                            </li>
+                                                        @endif
                                                     @endcan
+
                                                     @can('change_password')
                                                         <li class="dropdown-item py-2">
                                                             <a class="changePassword"

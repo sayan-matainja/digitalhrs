@@ -97,7 +97,7 @@
                             <tr>
                                 <td>{{ (($posts->currentPage() - 1 ) * (\App\Models\Post::RECORDS_PER_PAGE) + (++$key)) }}</td>
                                 <td>{{ ucfirst($value->post_name) }}</td>
-                                <td>{{ ucfirst($value->department->dept_name) }}</td>
+                                <td>{{ $value->department ? ucfirst($value->department->dept_name) : '-' }}</td>
                                 <td class="text-center">
                                     <p class="btn btn-info btn-sm" id="showEmployee" data-employee="{{ $value->employees }}">
                                         {{ $value->employees_count }}

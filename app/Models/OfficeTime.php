@@ -98,7 +98,7 @@ class OfficeTime extends Model
     protected function closingTime(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => date("g:i A", strtotime($value)),
+            get: fn($value) => \DateTime::createFromFormat('H:i:s', $value)->format('g:i A'),
         );
     }
 
@@ -108,7 +108,7 @@ class OfficeTime extends Model
     protected function openingTime(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => date("g:i A", strtotime($value)),
+            get: fn($value) => \DateTime::createFromFormat('H:i:s', $value)->format('g:i A'),
         );
     }
 

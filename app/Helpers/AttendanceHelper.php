@@ -104,6 +104,14 @@ class AttendanceHelper
         if ($appTimeSetting) {
             return date('H:i:s', strtotime($time));
         }
+
+        // Handle 24-hour time format properly
+        $dateTime = \DateTime::createFromFormat('H:i:s', $time);
+        if ($dateTime) {
+            return $dateTime->format('h:i A');
+        }
+
+        // Fallback for other formats
         return date('h:i A', strtotime($time));
     }
 

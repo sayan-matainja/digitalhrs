@@ -16,11 +16,11 @@ class UserAccountRequest extends FormRequest
     public function rules()
     {
         return [
-            'bank_name' => 'nullable|string|required_with:bank_account_no,bank_account_type',
-            'bank_account_no' => 'nullable|numeric|required_with:bank_name,bank_account_type',
-            'bank_account_type' => ['nullable', 'string', 'required_with:bank_name,bank_account_type', Rule::in(EmployeeAccount::BANK_ACCOUNT_TYPE)],
-            'bvn' => 'required|alpha_num|max:30',
-            'account_holder' => 'required|string',
+            'bank_name' => 'nullable|string',
+            'bank_account_no' => 'nullable|numeric',
+            'bank_account_type' => ['nullable', 'string', Rule::in(EmployeeAccount::BANK_ACCOUNT_TYPE)],
+            'bvn' => 'nullable|alpha_num|max:30',
+            'account_holder' => 'nullable|string',
         ];
 
     }
