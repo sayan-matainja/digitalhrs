@@ -45,9 +45,9 @@ class UserUpdateRequest extends FormRequest
 
             'email' => ['nullable', 'email', Rule::unique('users')->ignore($this->employee)],
             'username' => ['nullable', 'string', Rule::unique('users')->ignore($this->employee)],
-            'address' => 'nullable|required_unless:role_id,1',
-            'dob' => 'nullable|required_unless:role_id,1|date|before:today',
-            'phone' => 'nullable|required_unless:role_id,1|numeric',
+            'address' => 'nullable',
+            'dob' => 'nullable|date|before:today',
+            'phone' => 'nullable|numeric',
             'nin' => 'nullable|numeric',
             'gender' => ['nullable', 'required_unless:role_id,1', 'string', Rule::in(User::GENDER)],
             'marital_status' => ['nullable', 'required_unless:role_id,1', 'string', Rule::in(User::MARITAL_STATUS)],

@@ -133,7 +133,6 @@
     $('#employeeDetail').validate({
         rules: {
             name: { required: true },
-            address: { required: true },
             email: { required: true },
             role_id: { required: true },
             username: { required: true },
@@ -141,9 +140,6 @@
         messages: {
             name: {
                 required: "{{ __('index.enter_name') }}",
-            },
-            address: {
-                required: "{{ __('index.enter_address') }}"
             },
             email: {
                 required: "{{ __('index.enter_valid_email') }}"

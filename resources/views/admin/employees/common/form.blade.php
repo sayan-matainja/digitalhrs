@@ -446,42 +446,39 @@
                     <h5 class="mb-3 border-bottom pb-3">{{ __('index.bank_detail')}}</h5>
                     <div class="row">
                         <div class="col-lg-6 col-md-6 mb-4">
-                            <label for="bank_name" class="form-label">{{ __('index.bank_name')}} <span
-                                    style="color: red">*</span></label>
+                            <label for="bank_name" class="form-label">{{ __('index.bank_name')}}</label>
                             <input type="text" class="form-control"
                                    id="bank_name"
                                    name="bank_name"
                                    value="{{ isset($userDetail?->accountDetail) ? $userDetail?->accountDetail?->bank_name: old('bank_name') }}"
-                                   autocomplete="off" placeholder="{{ __('index.bank_name')}}" required>
+                                   autocomplete="off" placeholder="{{ __('index.bank_name')}}">
                         </div>
 
                         <div class="col-lg-6 col-md-6 mb-4">
-                            <label for="bank_account_no" class="form-label">{{ __('index.bank_account_number')}} <span
-                                    style="color: red">*</span></label>
+                            <label for="bank_account_no" class="form-label">{{ __('index.bank_account_number')}}</label>
                             <input type="number"
                                    class="form-control"
                                    id="bank_account_no"
                                    name="bank_account_no"
                                    value="{{ isset($userDetail?->accountDetail) ? $userDetail?->accountDetail?->bank_account_no: old('bank_account_no') }}"
                                    autocomplete="off"
-                                   placeholder=" {{ __('index.bank_account_number')}}" required>
+                                   placeholder=" {{ __('index.bank_account_number')}}">
                         </div>
 
                         <div class="col-lg-6 col-md-6 mb-4">
-                            <label for="account_holder" class="form-label">{{ __('index.account_holder_name')}} <span style="color: red">*</span></label>
+                            <label for="account_holder" class="form-label">{{ __('index.account_holder_name')}}</label>
                             <input type="text"
                                    class="form-control"
                                    id="account_holder"
                                    name="account_holder"
                                    value="{{isset($userDetail) ? $userDetail?->accountDetail?->account_holder: old('account_holder') }}"
                                    autocomplete="off"
-                                   required
                                    placeholder="{{ __('index.account_holder_name') }}">
                         </div>
 
                         <div class="col-lg-6 col-md-6 mb-4">
-                            <label for="bank_account_type" class="form-label">{{ __('index.bank_account_type')}}<span style="color: red">*</span></label>
-                            <select class="form-select" id="bank_account_type" name="bank_account_type" required>
+                            <label for="bank_account_type" class="form-label">{{ __('index.bank_account_type')}}</label>
+                            <select class="form-select" id="bank_account_type" name="bank_account_type">
                                 <option value="" {{isset($userDetail) || old('bank_account_type') ? '': 'selected'}} >
                                     {{ __('index.select_account_type') }}
                                 </option>
@@ -495,12 +492,11 @@
 
                         <!-- BVN Field -->
                         <div class="col-lg-6 col-md-6 mb-4">
-                            <label for="bvn" class="form-label"> {{ __('index.bvn') }} <span style="color: red">*</span></label>
+                            <label for="bvn" class="form-label"> {{ __('index.bvn') }}</label>
                             <input type="text" class="form-control" id="bvn" name="bvn"
                                    value="{{ isset($userDetail?->accountDetail) ? $userDetail?->accountDetail?->bvn : old('bvn') }}"
                                    placeholder="{{ __('index.bvn') }}"
-                                   maxlength="11"
-                                   required>
+                                   maxlength="11">
                         </div>
 
                     </div>
