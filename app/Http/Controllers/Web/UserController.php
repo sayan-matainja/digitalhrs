@@ -953,6 +953,7 @@ class UserController extends Controller
                     else{
                         $department = Department::create([
                             'dept_name' => $data['department'],
+                            'slug' => \Illuminate\Support\Str::slug($data['department']),
                             'branch_id' => $branchId,
                             'company_id' => $companyId,
                         ]);
