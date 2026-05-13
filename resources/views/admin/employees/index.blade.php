@@ -194,6 +194,7 @@
                             <tr>
                                 @can('show_detail_employee')
                                     <th>#</th>
+                                    <th>Sl No.</th>
                                 @endcan
                                 <th>EMPLOYEE ID</th>
                                 <th>SURNAME</th>
@@ -230,6 +231,7 @@
                         </thead>
                         <tbody>
                             <?php $changeColor = [0 => 'success', 1 => 'primary']; ?>
+                            <?php $serialNumber = ($users->currentPage() - 1) * $users->perPage() + 1; ?>
                             @forelse($users as $value)
                                 <tr>
                                     @can('show_detail_employee')
@@ -238,6 +240,7 @@
                                                 <i class="link-icon" data-feather="eye"></i>
                                             </a>
                                         </td>
+                                        <td>{{ $serialNumber }}</td>
                                     @endcan
                                     <td>{{ $value->employee_code ?? 'N/A' }}</td>
                                     <td>{{ $value->surname ?? 'N/A' }}</td>
@@ -379,9 +382,10 @@
                                         </td>
                                     @endcanany
                                 </tr>
+                                <?php $serialNumber++; ?>
                             @empty
                                 <tr>
-                                    <td colspan="31">
+                                    <td colspan="32">
                                         <p class="text-center"><b>{{ __('index.no_records_found') }}</b></p>
                                     </td>
                                 </tr>

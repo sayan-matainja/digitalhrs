@@ -101,8 +101,7 @@ class UserRepository
             });
         });
 
-    return $userList->orderBy('users.name')
-        ->latest()
+    return $userList->orderBy('users.first_name', 'asc')
         ->paginate(getRecordPerPage());
     }
 

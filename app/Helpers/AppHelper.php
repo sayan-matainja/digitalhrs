@@ -1264,6 +1264,28 @@ class AppHelper
         return $shift !== null;
     }
 
+    public static function formatPhoneNumbers($phoneString)
+    {
+        if (empty($phoneString)) {
+            return __('index.not_available');
+        }
+
+        // Split by comma and trim whitespace
+        $phoneNumbers = array_map('trim', explode(',', $phoneString));
+
+        // Filter out empty numbers
+        $phoneNumbers = array_filter($phoneNumbers, function($phone) {
+            return !empty($phone);
+        });
+
+        if (empty($phoneNumbers)) {
+            return __('index.not_available');
+        }
+
+        // Join with line breaks
+        return implode('<br>', $phoneNumbers);
+    }
+
     public static  function getLastApprover($leave_type_id, $userId)
     {
 
