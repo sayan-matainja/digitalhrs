@@ -256,7 +256,7 @@
                                     </td>
                                     <td>{{ (!empty($value->employment_type) ? ucfirst($value->employment_type) : 'N/A') }}</td>
 
-                                    <td>{{ $value->supervisor ? ucfirst($value->supervisor->name) : 'N/A' }}</td>
+                                    <td>{{ ($value->supervisor_id && $value->supervisor) ? ucfirst($value->supervisor->name) : 'N/A' }}</td>
                                     <td>{{ $value->branch ? ucfirst($value->branch->name) : 'N/A' }}
                                     </td>
                                     <td>{{ $value->department ? ucfirst($value->department->dept_name) : 'N/A' }}</td>

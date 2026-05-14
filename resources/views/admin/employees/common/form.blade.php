@@ -251,6 +251,7 @@
                     <label for="supervisor" class="form-label">{{ __('index.supervisor') }}</label>
                     <select class="form-select" id="supervisor" name="supervisor_id">
                         @if(isset($userDetail))
+                            <option value="" {{ !$userDetail->supervisor_id ? 'selected' : '' }}>N/A</option>
                             @foreach($filteredSupervisor as $supervisor)
                                 @if( $supervisor->id !== $userDetail->id)
                                     <option

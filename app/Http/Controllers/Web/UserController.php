@@ -964,7 +964,9 @@ class UserController extends Controller
 
                 // Find Supervisor
                 $supervisorId = null;
+                $supervisorProvided = false;
                 if (!empty($data['supervisor']) && $data['supervisor'] != 'N/A') {
+                    $supervisorProvided = true;
                     $supervisor = \App\Models\User::where('name', $data['supervisor'])
                         ->where('company_id', $companyId)
                         ->whereNull('deleted_at')
@@ -1072,7 +1074,7 @@ class UserController extends Controller
                     'department_id' => $departmentId,
                     'post_id' => $postId,
                     'role_id' => $employeeRole->id,
-                    'supervisor_id' => $supervisorId,
+                    'supervisor_id' => $supervisorId, // Will be null if CSV didn't provide supervisor
                     'designation' => !empty($data['designation']) ? $data['designation'] : null,
                     'employment_type' => !empty($data['employment_type']) ? ucfirst(strtolower(trim($data['employment_type']))) : '',
                     // 'joining_date' => $data['employment_date'],
@@ -1083,7 +1085,7 @@ class UserController extends Controller
                     'marital_status' => 'unmarried',
                     'address' => null,
                     'avatar' => null,
-                    'remarks' => 'Imported via CSV on ' . date('Y-m-d H:i:s'),
+                    'remarks' => 'Imported via CSV on ' . date('Y-m-d H:i:s') . ' (Row: ' . $rowNumber . ') - Supervisor: ' . ($supervisorProvided ? 'YES' : 'NO'),
                     'is_active' => 1,
                     'status' => 'verified',
                     'office_time_id' => $officeTimeId,
