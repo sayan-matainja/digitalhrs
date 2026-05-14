@@ -984,13 +984,18 @@ class UserController extends Controller
                     continue;
                 }
 
-                // Find Post
+                // Find Post (department-specific)
                 $postId = null;
                 if (!empty($data['designation']) && $data['designation'] != 'N/A') {
-                    $post = \App\Models\Post::where('post_name', $data['designation'])->first();
+                    // First try to find designation in the specific department
+                    $post = \App\Models\Post::where('post_name', $data['designation'])
+                        ->where('dept_id', $departmentId)
+                        ->first();
+
                     if ($post) {
                         $postId = $post->id;
-                    }else{
+                    } else {
+                        // If not found in specific department, create new one
                         $post = \App\Models\Post::create([
                             'post_name' => $data['designation'],
                             'branch_id' => $branchId,
