@@ -416,7 +416,7 @@
     <div class="net-salary">
         <p>{{ __('index.net_salary') }}: {{ $currency.' '. $payrollData->net_salary }}</p>
         <p>
-            ({{ $numberToWords->get($payrollData->net_salary) }})</p>
+            ({{ \App\Helpers\AppHelper::getCurrencyWords($payrollData->net_salary) }})</p>
         <p style="font-weight: normal">{{ __('index.net_salary_formula') }}</p>
     </div>
 </div>

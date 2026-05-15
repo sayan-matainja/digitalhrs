@@ -53,7 +53,7 @@ class PayslipResource extends JsonResource
             "overtime"=> $this->overtime,
             "undertime"=> $this->undertime,
             "net_salary"=> $this->net_salary,
-            "net_salary_figure" => $numberToWords->get($this->net_salary),
+            "net_salary_figure" => AppHelper::getCurrencyWords($this->net_salary),
             "employee_code" => $this->employee_code,
             'pf_deduction'=>$this->pf_deduction,
             'ssf_deduction'=>$this->ssf_deduction,

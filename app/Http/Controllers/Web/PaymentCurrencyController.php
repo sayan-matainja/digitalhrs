@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Helpers\AppHelper;
 use App\Helpers\PaymentCurrencyHelper;
 use App\Http\Controllers\Controller;
 use App\Repositories\PaymentCurrencyRepository;
@@ -48,6 +49,10 @@ class PaymentCurrencyController extends Controller
             $currencyData = $currencies->firstWhere('id', $currencyId);
             $currencyDetail = $this->paymentCurrencyRepo->findPayrollCurrency();
             $this->paymentCurrencyRepo->updateOrCreatePaymentCurrency($currencyDetail,$currencyData);
+
+            // Clear currency cache so changes reflect immediately
+            AppHelper::clearCurrencyCache();
+
             return redirect()
                 ->back()
                 ->with('success',__('message.currency_update'));

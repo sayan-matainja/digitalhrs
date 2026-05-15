@@ -777,6 +777,57 @@ class AppHelper
         });
     }
 
+    public static function getPaymentCurrency()
+    {
+        return Cache::remember('payment_currency', now()->addMonth(), function () {
+            return PaymentCurrency::first();
+        });
+    }
+
+    public static function getCurrencyWords($amount)
+    {
+        $paymentCurrency = self::getPaymentCurrency();
+
+        if (!$paymentCurrency) {
+            // Default to USD if no currency is set
+            return str_replace(['Rupees', 'Paisa'], ['Dollars', 'Cents'], (new \MilanTarami\NumberToWordsConverter\Services\NumberToWords())->get($amount));
+        }
+
+        $currencyCode = $paymentCurrency->code;
+        $currencyWords = self::getCurrencyWordsMapping($currencyCode);
+
+        $numberToWords = new \MilanTarami\NumberToWordsConverter\Services\NumberToWords();
+        $words = $numberToWords->get($amount);
+
+        // Replace default currency words with correct ones
+        return str_replace(['Rupees', 'Paisa'], [$currencyWords['main'], $currencyWords['sub']], $words);
+    }
+
+    public static function clearCurrencyCache()
+    {
+        Cache::forget('payment_currency');
+    }
+
+    private static function getCurrencyWordsMapping($currencyCode)
+    {
+        $config = config('currency_words');
+
+        // Check specific mappings first
+        if (isset($config['mappings'][$currencyCode])) {
+            return $config['mappings'][$currencyCode];
+        }
+
+        // Check pattern-based mappings
+        foreach ($config['patterns'] as $pattern => $data) {
+            if (in_array($currencyCode, $data['codes'])) {
+                return $data['words'];
+            }
+        }
+
+        // Return fallback
+        return $config['fallback'];
+    }
+
     public static function getMaxAllowedAdvanceSalaryLimit()
     {
         $key = 'advance_salary_limit';
