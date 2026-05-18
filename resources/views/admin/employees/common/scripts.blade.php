@@ -132,17 +132,25 @@
 
     $('#employeeDetail').validate({
         rules: {
-            name: { required: true },
+            surname: { required: true },
+            first_name: { required: true },
             email: { required: true },
+            password: { required: true },
             role_id: { required: true },
             username: { required: true },
         },
         messages: {
-            name: {
-                required: "{{ __('index.enter_name') }}",
+            surname: {
+                required: "{{ __('index.enter_surname') }}",
+            },
+            first_name: {
+                required: "{{ __('index.enter_first_name') }}",
             },
             email: {
                 required: "{{ __('index.enter_valid_email') }}"
+            },
+            password: {
+                required: "{{ __('index.enter_password') }}"
             },
             role_id: {
                 required: "{{ __('index.select_role') }}"
@@ -372,7 +380,11 @@
             $('#branch').on('change', () => {
                 loadDepartmentsAndOfficeTime();
                 loadLeaveTypes();
-            }).trigger('change');
+            });
+            // Only trigger change if a branch is actually selected
+            if ($('#branch').val()) {
+                $('#branch').trigger('change');
+            }
         } else {
             // non-admin: load using the default branch id
             loadDepartmentsAndOfficeTime();

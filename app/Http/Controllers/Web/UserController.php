@@ -847,7 +847,7 @@ class UserController extends Controller
                         'email',
                         \Illuminate\Validation\Rule::unique('users', 'email')->whereNull('deleted_at')->whereNotNull('email')
                     ],
-                    'phone_no' => 'nullable|string',
+                    'phone_no' => ['nullable', 'string', 'regex:/^[0-9]+(\/[0-9]+)*$/'],
                     'employee_id' => [
                         'nullable',
                         'string',
@@ -1055,8 +1055,23 @@ class UserController extends Controller
                     // Use provided employee ID as-is (any format)
                     $employeeCode = trim($data['employee_id']);
                 } else {
-                    // Auto-generate if empty
-                    $employeeCode = AppHelper::getEmployeeCode();
+                    // Auto-generate if empty - ensure uniqueness within batch
+                    if (!isset($lastEmployeeCodeNumber)) {
+                        // Get the highest existing employee code number only once per batch
+                        $prefix = AppHelper::getEmployeeCodePrefix();
+                        $lastEmployee = \App\Models\User::where('employee_code', 'like', $prefix.'-%')
+                            ->orderBy('employee_code', 'desc')
+                            ->first('employee_code');
+
+                        if ($lastEmployee && preg_match('/^' . preg_quote($prefix) . '-(\d+)$/', $lastEmployee->employee_code, $matches)) {
+                            $lastEmployeeCodeNumber = (int)$matches[1];
+                        } else {
+                            $lastEmployeeCodeNumber = 0;
+                        }
+                    }
+
+                    $lastEmployeeCodeNumber++;
+                    $employeeCode = AppHelper::getEmployeeCodePrefix().'-'.str_pad($lastEmployeeCodeNumber, 5, '0', STR_PAD_LEFT);
                 }
                 if (isset($data['phone_no']) && !empty($data['phone_no'])) {
                     $mobileNos = explode('/', $data['phone_no']);
@@ -1086,8 +1101,8 @@ class UserController extends Controller
                     'joining_date' => !empty($data['employment_date']) ? $data['employment_date'] : null,
                     'dob' => !empty($data['date_of_birth']) ? $data['date_of_birth'] : null,
                     'nin' => !empty($data['nin']) ? $data['nin'] : '',
-                    'gender' => 'male',
-                    'marital_status' => 'unmarried',
+                    'gender' => !empty($data['gender']) ? trim($data['gender']) : '',
+                    'marital_status' => !empty($data['marital_status']) ? trim($data['marital_status']) : '',
                     'address' => null,
                     'avatar' => null,
                     'remarks' => 'Imported via CSV on ' . date('Y-m-d H:i:s') . ' (Row: ' . $rowNumber . ') - Supervisor: ' . ($supervisorProvided ? 'YES' : 'NO'),

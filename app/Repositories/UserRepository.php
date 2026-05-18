@@ -156,7 +156,41 @@ class UserRepository
     public function store($validatedData)
     {
         $validatedData['created_by'] = getAuthUserCode() ?? null;
-        $validatedData['avatar'] = $this->storeImage($validatedData['avatar'], User::AVATAR_UPLOAD_PATH, 500, 500);
+        if (isset($validatedData['avatar']) && $validatedData['avatar']) {
+            $validatedData['avatar'] = $this->storeImage($validatedData['avatar'], User::AVATAR_UPLOAD_PATH, 500, 500);
+        } else {
+            $validatedData['avatar'] = null;
+        }
+
+        // Handle fields that cannot be null in database but are optional in form
+        $validatedData['nin'] = $validatedData['nin'] ?? '';
+        $phone = $validatedData['phone'] ?? '';
+        // Convert / separator to , for storage (consistent with CSV upload)
+        if (!empty($phone) && strpos($phone, '/') !== false) {
+            $phoneNumbers = explode('/', $phone);
+            $phone = implode(',', $phoneNumbers);
+        }
+        $validatedData['phone'] = $phone;
+        $validatedData['address'] = $validatedData['address'] ?? '';
+        $validatedData['dob'] = $validatedData['dob'] ?? null;
+        $validatedData['joining_date'] = $validatedData['joining_date'] ?? null;
+        $validatedData['gender'] = $validatedData['gender'] ?? '';
+        $validatedData['marital_status'] = $validatedData['marital_status'] ?? '';
+        $validatedData['employment_type'] = $validatedData['employment_type'] ?? '';
+        $validatedData['branch_id'] = $validatedData['branch_id'] ?? null;
+        $validatedData['department_id'] = $validatedData['department_id'] ?? null;
+        $validatedData['post_id'] = $validatedData['post_id'] ?? null;
+        $validatedData['supervisor_id'] = $validatedData['supervisor_id'] ?? null;
+        $validatedData['office_time_id'] = $validatedData['office_time_id'] ?? null;
+        $validatedData['grade_level'] = $validatedData['grade_level'] ?? null;
+        $validatedData['tax_id'] = $validatedData['tax_id'] ?? null;
+        $validatedData['sbu_code'] = $validatedData['sbu_code'] ?? null;
+        $validatedData['rsa_no'] = $validatedData['rsa_no'] ?? null;
+        $validatedData['hmo_id'] = $validatedData['hmo_id'] ?? null;
+        $validatedData['leave_allocated'] = $validatedData['leave_allocated'] ?? 0;
+        $validatedData['remarks'] = $validatedData['remarks'] ?? null;
+        $validatedData['workspace_type'] = $validatedData['workspace_type'] ?? null;
+
         return User::create($validatedData)->fresh();
     }
 
@@ -190,6 +224,33 @@ class UserRepository
             }
             $validatedData['avatar'] = $this->storeImage($validatedData['avatar'], User::AVATAR_UPLOAD_PATH, 500, 500);
         }
+
+        // Handle fields that cannot be null in database but are optional in form
+        if (array_key_exists('nin', $validatedData)) {
+            $validatedData['nin'] = $validatedData['nin'] ?? '';
+        }
+        if (array_key_exists('phone', $validatedData)) {
+            $phone = $validatedData['phone'] ?? '';
+            // Convert / separator to , for storage (consistent with CSV upload)
+            if (!empty($phone) && strpos($phone, '/') !== false) {
+                $phoneNumbers = explode('/', $phone);
+                $phone = implode(',', $phoneNumbers);
+            }
+            $validatedData['phone'] = $phone;
+        }
+        if (array_key_exists('address', $validatedData)) {
+            $validatedData['address'] = $validatedData['address'] ?? '';
+        }
+        if (array_key_exists('employment_type', $validatedData)) {
+            $validatedData['employment_type'] = $validatedData['employment_type'] ?? '';
+        }
+        if (array_key_exists('gender', $validatedData)) {
+            $validatedData['gender'] = $validatedData['gender'] ?? '';
+        }
+        if (array_key_exists('marital_status', $validatedData)) {
+            $validatedData['marital_status'] = $validatedData['marital_status'] ?? '';
+        }
+
         return $userDetail->update($validatedData);
     }
 

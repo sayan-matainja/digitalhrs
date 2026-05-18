@@ -80,9 +80,9 @@
 
                 <div class="col-lg-4 col-md-6 mb-3">
                     <label for="number" class="form-label">{{ __('index.phone_no') }}</label>
-                    <input type="number" class="form-control" id="phone" name="phone"
-                           value="{{ isset($userDetail)? $userDetail->phone: old('phone') }}"
-                           autocomplete="off" placeholder="{{ __('index.phone_no') }}">
+                    <input type="text" class="form-control" id="phone" name="phone"
+                           value="{{ isset($userDetail)? str_replace(',', '/', $userDetail->phone): old('phone') }}"
+                           autocomplete="off" placeholder="{{ __('index.phone_no') }} (Use / to separate multiple numbers)">
                 </div>
 
                 <div class="col-lg-4 col-md-6 mb-3">
@@ -103,7 +103,7 @@
                 <div class="col-lg-4 col-md-6 mb-3">
                     <label for="gender" class="form-label">{{ __('index.gender') }}</label>
                     <select class="form-select" id="gender" name="gender">
-                        <option value="" {{isset($userDetail) || old('gender') ? '' : 'selected'}}  disabled>{{ __('index.select_gender') }}
+                        <option value="" {{!isset($userDetail) || (isset($userDetail) && empty($userDetail->gender)) || old('gender') ? 'selected': ''}}  disabled>{{ __('index.select_gender') }}
                         </option>
                         @foreach(User::GENDER as $value)
                             <option
@@ -115,8 +115,8 @@
 
                 <div class="col-lg-4 col-md-6 mb-3">
                     <label for="marital_status" class="form-label">{{ __('index.marital_status') }}</label>
-                    <select class="form-select" id="marital_status" name="marital_status" required>
-                        <option value="" {{isset($userDetail) || old('marital_status') ? '' : 'selected'}}  disabled>
+                    <select class="form-select" id="marital_status" name="marital_status">
+                        <option value="" {{!isset($userDetail) || (isset($userDetail) && empty($userDetail->marital_status)) || old('marital_status') ? 'selected': ''}}  disabled>
                             {{ __('index.choose_marital_status') }}
                         </option>
                         @foreach(User::MARITAL_STATUS as $value)
@@ -130,19 +130,18 @@
 
                 <!-- NIN Field -->
                 <div class="col-lg-4 col-md-6 mb-3">
-                    <label for="nin" class="form-label"> {{ __('index.nin') }} <span style="color: red">*</span>
-                    </label>
-                    <input type="number" class="form-control" id="nin" name="nin" value="{{ isset($userDetail) ? $userDetail->nin : old('nin') }}" placeholder="{{ __('index.nin') }}" required>
+                    <label for="nin" class="form-label"> {{ __('index.nin') }}</label>
+                    <input type="number" class="form-control" id="nin" name="nin" value="{{ isset($userDetail) ? $userDetail->nin : old('nin') }}" placeholder="{{ __('index.nin') }}">
                 </div>
 
                 <div class="col-lg-4 mb-3">
-                    <label for="avatar" class="form-label">{{ __('index.upload_avatar') }} <span style="color: red">*</span> </label>
+                    <label for="avatar" class="form-label">{{ __('index.upload_avatar') }}</label>
                     <input class="form-control"
                            type="file"
                            id="avatar"
                            name="avatar"
                            accept="image/*"
-                           value="{{ isset($userDetail) ? $userDetail->avatar: old('avatar') }}" {{isset($userDetail) ? '': 'required'}} >
+                           value="{{ isset($userDetail) ? $userDetail->avatar: old('avatar') }}" >
 
                     <img class="mt-2 rounded {{(isset($userDetail) && $userDetail->avatar) ? '': 'd-none'}}"
                          id="image-preview"
@@ -210,7 +209,7 @@
                 <div class="col-lg-4 col-md-6 mb-3">
                     <label for="branch_id" class="form-label">{{ __('index.branch') }}</label>
                     <select class="form-select" id="branch" name="branch_id">
-                        <option value="" {{!isset($userDetail) || old('branch_id') ? 'selected': ''}}  disabled>{{ __('index.select_branch') }}
+                        <option value="" {{!isset($userDetail) || (isset($userDetail) && !$userDetail->branch_id) || old('branch_id') ? 'selected': ''}}  disabled>{{ __('index.select_branch') }}
                         </option>
                         @if(isset($companyDetail))
                             @foreach($companyDetail->branches()->get() as $key => $branch)

@@ -250,7 +250,7 @@
                                     <td>{{ $value->accountDetail && $value->accountDetail->bvn ? $value->accountDetail->bvn : 'N/A' }}</td>
                                     <td>{{ $value->dob ? \Carbon\Carbon::parse($value->dob)->format('d/m/Y') : 'N/A' }}
                                     </td>
-                                    <td>{{ $value->phone ?? 'N/A' }}</td>
+                                    <td>{{ ($value->phone && $value->phone !== '') ? $value->phone : 'N/A' }}</td>
                                     <td>{{ ($value->email && !str_starts_with($value->email, 'no-email-')) ? $value->email : 'N/A' }}</td>
                                     <td>{{ $value->joining_date ? \Carbon\Carbon::parse($value->joining_date)->format('d/m/Y') : 'N/A' }}
                                     </td>

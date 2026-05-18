@@ -39,7 +39,7 @@ class UserCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'employee_code' => 'nullable',
+            'employee_code' => ['nullable', 'string', Rule::unique('users', 'employee_code')],
 
             // Name fields - Split into three
             'name' => 'nullable', // Keep for backward compatibility
@@ -47,16 +47,16 @@ class UserCreateRequest extends FormRequest
             'first_name' => 'required|string|max:100|min:2',
             'middle_name' => 'nullable|string|max:100',
 
-            'email' => 'nullable|email|unique:users',
-            'password' => 'nullable|string|min:4',
-            'username' => 'nullable|string|unique:users',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:4',
+            'username' => 'required|string|unique:users',
             'address' => 'nullable',
             'dob' => 'nullable|date|before:today',
-            'phone' => 'nullable|numeric',
+            'phone' => ['nullable', 'string', 'regex:/^[0-9]+(\/[0-9]+)*$/'],
             'nin' => 'nullable|numeric',
-            'gender' => ['nullable', 'required_unless:role_id,1', 'string', Rule::in(User::GENDER)],
-            'marital_status' => ['nullable', 'required_unless:role_id,1', 'string', Rule::in(User::MARITAL_STATUS)],
-            'employment_type' => ['nullable', 'required_unless:role_id,1', 'string', Rule::in(User::EMPLOYMENT_TYPE)],
+            'gender' => ['nullable', 'string', Rule::in(User::GENDER)],
+            'marital_status' => ['nullable', 'string', Rule::in(User::MARITAL_STATUS)],
+            'employment_type' => ['nullable', 'string', Rule::in(User::EMPLOYMENT_TYPE)],
             'joining_date' => 'nullable|date|before_or_equal:today',
             'role_id' => 'required|exists:roles,id',
             'branch_id' => 'nullable|exists:branches,id',
