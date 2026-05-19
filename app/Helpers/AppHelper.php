@@ -935,7 +935,7 @@ class AppHelper
     }
 
     public static function getEmployeeCode(){
-        $user = User::orderBy('created_at', 'desc')->first('employee_code');
+        $user = User::orderBy('employee_code', 'desc')->first('employee_code');
 
         $prefix = self::getEmployeeCodePrefix();
 
@@ -952,7 +952,7 @@ class AppHelper
                 // If it doesn't follow the expected format (e.g., custom format from CSV),
                 // find the highest numbered employee code with the expected format
                 $lastStandardCode = User::where('employee_code', 'like', $prefix.'-%')
-                    ->orderBy('created_at', 'desc')
+                    ->orderBy('employee_code', 'desc')
                     ->first('employee_code');
 
                 if ($lastStandardCode && preg_match('/^' . preg_quote($prefix) . '-(\d+)$/', $lastStandardCode->employee_code, $matches)) {

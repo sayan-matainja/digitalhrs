@@ -71,7 +71,7 @@ class UserUpdateRequest extends FormRequest
             'remarks' => 'nullable|string|max:1000',
             'workspace_type' => ['nullable', 'boolean', Rule::in([1, 0])],
             'avatar' => ['sometimes', 'file', 'mimes:jpeg,png,jpg,svg', 'max:5048'],
-            'employee_code' => ['nullable', 'string', Rule::unique('users', 'employee_code')->ignore($this->employee)],
+            'employee_code' => ['nullable', 'string', Rule::unique('users', 'employee_code')->whereNull('deleted_at')->ignore($this->employee)],
             'allow_holiday_check_in' => ['nullable'],
         ];
     }

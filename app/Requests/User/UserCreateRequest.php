@@ -39,7 +39,7 @@ class UserCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'employee_code' => ['nullable', 'string', Rule::unique('users', 'employee_code')],
+            'employee_code' => ['nullable', 'string', Rule::unique('users', 'employee_code')->whereNull('deleted_at')],
 
             // Name fields - Split into three
             'name' => 'nullable', // Keep for backward compatibility
