@@ -80,7 +80,6 @@ class TaxReportService
                     "annual" => $amount,
                     "monthly" => $monthly,
                     "weekly" => $weekly,
-                    "taxable" => $component->taxable ?? 1, //added✅
                 ];
 
             }
@@ -189,8 +188,7 @@ class TaxReportService
             foreach ($allMonths as $month) {
                 $year = ($month >= $fiscalYearStartMonth) ? $fiscalYearStartYear : $fiscalYearEndYear;
                 $monthStart = Carbon::createFromDate($year, $month, 1)->startOfMonth();
-                // $totalDays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-                $totalDays = $monthStart->daysInMonth; //added ✅
+                $totalDays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
 
 
                 $monthEnd = $monthStart->copy()->endOfMonth();
@@ -254,11 +252,7 @@ class TaxReportService
                         if($component['type'] == 'earning') {
                             $monthSalary += $amount;
                         }else{
-                            // $monthSalary -= $amount;
-                            //added ✅
-                            if(isset($component['taxable']) && $component['taxable'] == 1) {
-                                $monthSalary -= $amount;
-                            }
+                            $monthSalary -= $amount;
                         }
                     }
 
@@ -267,8 +261,7 @@ class TaxReportService
 
 
                 // Additional Components
-                // if (count($additionalComponents) > 0) {//added ✅
-                if (count($additionalComponents) > 0 && !$employeeData[0]->salary_group_id) {
+                if (count($additionalComponents) > 0) {
                     $additionalSalaryComponents = $this->calculateSalaryComponent($additionalComponents, $annualSalary, $monthlyBasic, $totalDays);
                     foreach ($additionalSalaryComponents as $component) {
 
