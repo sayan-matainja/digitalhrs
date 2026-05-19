@@ -847,7 +847,7 @@ class UserController extends Controller
                         'email',
                         \Illuminate\Validation\Rule::unique('users', 'email')->whereNull('deleted_at')->whereNotNull('email')
                     ],
-                    'phone_no' => ['nullable', 'string', 'regex:/^[0-9]+(\/[0-9]+)*$/'],
+                    'phone_no' => ['nullable', 'string'],
                     'employee_id' => [
                         'nullable',
                         'string',
@@ -1073,7 +1073,8 @@ class UserController extends Controller
                     $lastEmployeeCodeNumber++;
                     $employeeCode = AppHelper::getEmployeeCodePrefix().'-'.str_pad($lastEmployeeCodeNumber, 5, '0', STR_PAD_LEFT);
                 }
-                if (isset($data['phone_no']) && !empty($data['phone_no'])) {
+                $mobileNos = null;
+                if (isset($data['phone_no']) && !empty($data['phone_no']) && preg_match('/^[0-9]+(\/[0-9]+)*$/', $data['phone_no'])) {
                     $mobileNos = explode('/', $data['phone_no']);
                     $mobileNos = implode(',', $mobileNos);
                 }
