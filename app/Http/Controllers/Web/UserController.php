@@ -967,6 +967,7 @@ class UserController extends Controller
                 $supervisorProvided = false;
                 if (!empty($data['supervisor']) && $data['supervisor'] != 'N/A') {
                     $supervisorProvided = true;
+                    // $supervisor = \App\Models\User::where('name', $data['supervisor'])
                     // Clean up supervisor name from CSV - normalize spaces
                     $cleanSupervisorName = trim(preg_replace('/\s+/', ' ', $data['supervisor']));
                     $supervisor = \App\Models\User::where('name', $cleanSupervisorName)
@@ -1046,6 +1047,7 @@ class UserController extends Controller
 
 
                 // Prepare data
+                // $fullName = trim(($data['first_name'] ?? '') . ' ' . ($data['middle_name'] ?? '') . ' ' . ($data['surname'] ?? ''));
                 $nameParts = array_filter([
                     $data['first_name'] ?? '',
                     $data['middle_name'] ?? '',
@@ -1080,6 +1082,7 @@ class UserController extends Controller
                     $lastEmployeeCodeNumber++;
                     $employeeCode = AppHelper::getEmployeeCodePrefix().'-'.str_pad($lastEmployeeCodeNumber, 5, '0', STR_PAD_LEFT);
                 }
+                // if (isset($data['phone_no']) && !empty($data['phone_no'])) {
                 $mobileNos = null;
                 if (isset($data['phone_no']) && !empty($data['phone_no']) && preg_match('/^[0-9]+(\/[0-9]+)*$/', $data['phone_no'])) {
                     $mobileNos = explode('/', $data['phone_no']);
@@ -1117,7 +1120,7 @@ class UserController extends Controller
                     'is_active' => 1,
                     'status' => 'verified',
                     'office_time_id' => $officeTimeId,
-                    'workspace_type' => !empty($data['workplace']) && strtolower(trim($data['workplace'])) == 'field' ? 0 : 1, // Field=0, Office=1
+                    'workspace_type' => !empty($data['workplace']) && strtolower(trim($data['workplace'])) == 'office' ? 1 : 0, // Office=1, Field=0 (fallback)
                     'grade_level' => !empty($data['grade_level']) ? trim($data['grade_level']) : null,
                     'tax_id' => !empty($data['tax_id']) ? trim($data['tax_id']) : null,
                     'sbu_code' => !empty($data['sbu_code']) ? trim($data['sbu_code']) : null,

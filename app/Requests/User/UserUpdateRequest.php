@@ -5,6 +5,7 @@ use App\Helpers\AppHelper;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Session;
 
 class UserUpdateRequest extends FormRequest
 {
@@ -24,6 +25,20 @@ class UserUpdateRequest extends FormRequest
             'joining_date' => $this->input('joining_date') ? AppHelper::getEnglishDate($this->input('joining_date')) : null,
             'dob' => $this->input('dob') ? AppHelper::getEnglishDate($this->input('dob')) : null,
         ]);
+
+        // Convert workplace value to proper format (Office=1, anything else=0 for Field)
+        if ($this->has('workspace_type')) {
+            $workplaceValue = $this->input('workspace_type');
+
+
+            // Simple conversion: "office" or "1" = 1 (Office), everything else = 0 (Field)
+            $convertedValue = (is_string($workplaceValue) && strtolower(trim($workplaceValue)) === 'office') || $workplaceValue === '1' ? 1 : 0;
+
+            $this->merge([
+                'workspace_type' => $convertedValue
+            ]);
+        }
+
         if (!auth('admin')->check() && auth()->check()) {
             $this->merge(['branch_id' => auth()->user()->branch_id]);
         }
@@ -69,7 +84,7 @@ class UserUpdateRequest extends FormRequest
 
             'leave_allocated' => 'nullable|numeric|gte:0',
             'remarks' => 'nullable|string|max:1000',
-            'workspace_type' => ['nullable', 'boolean', Rule::in([1, 0])],
+            'workspace_type' => 'nullable|integer|in:0,1',
             'avatar' => ['sometimes', 'file', 'mimes:jpeg,png,jpg,svg', 'max:5048'],
             'employee_code' => ['nullable', 'string', Rule::unique('users', 'employee_code')->whereNull('deleted_at')->ignore($this->employee)],
             'allow_holiday_check_in' => ['nullable'],

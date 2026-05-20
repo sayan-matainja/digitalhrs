@@ -26,6 +26,18 @@ class UserCreateRequest extends FormRequest
             'dob' => $this->input('dob') ? AppHelper::getEnglishDate($this->input('dob')) : null,
         ]);
 
+        // Convert workplace value to proper format (Office=1, anything else=0 for Field)
+        if ($this->has('workspace_type')) {
+            $workplaceValue = $this->input('workspace_type');
+
+            // Simple conversion: "office" or "1" = 1 (Office), everything else = 0 (Field)
+            $convertedValue = (is_string($workplaceValue) && strtolower(trim($workplaceValue)) === 'office') || $workplaceValue === '1' ? 1 : 0;
+
+            $this->merge([
+                'workspace_type' => $convertedValue
+            ]);
+        }
+
         if (!auth('admin')->check() && auth()->check()) {
             $this->merge(['branch_id' => auth()->user()->branch_id]);
         }
@@ -74,7 +86,7 @@ class UserCreateRequest extends FormRequest
 
             'leave_allocated' => 'nullable|numeric|gte:0',
             'remarks' => 'nullable|string|max:1000',
-            'workspace_type' => ['nullable', 'boolean', Rule::in([1, 0])],
+            'workspace_type' => 'nullable|integer|in:0,1',
             'avatar' => ['nullable', 'file', 'mimes:jpeg,png,jpg,webp', 'max:5048'],
             'allow_holiday_check_in' => ['nullable'],
         ];
