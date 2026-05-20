@@ -967,7 +967,9 @@ class UserController extends Controller
                 $supervisorProvided = false;
                 if (!empty($data['supervisor']) && $data['supervisor'] != 'N/A') {
                     $supervisorProvided = true;
-                    $supervisor = \App\Models\User::where('name', $data['supervisor'])
+                    // Clean up supervisor name from CSV - normalize spaces
+                    $cleanSupervisorName = trim(preg_replace('/\s+/', ' ', $data['supervisor']));
+                    $supervisor = \App\Models\User::where('name', $cleanSupervisorName)
                         ->where('company_id', $companyId)
                         ->whereNull('deleted_at')
                         ->first();
@@ -1044,7 +1046,12 @@ class UserController extends Controller
 
 
                 // Prepare data
-                $fullName = trim(($data['first_name'] ?? '') . ' ' . ($data['middle_name'] ?? '') . ' ' . ($data['surname'] ?? ''));
+                $nameParts = array_filter([
+                    $data['first_name'] ?? '',
+                    $data['middle_name'] ?? '',
+                    $data['surname'] ?? ''
+                ]);
+                $fullName = trim(implode(' ', $nameParts));
 
                 $email = !empty($data['email']) ? strtolower(trim($data['email'])) : 'no-email-' . time() . '-' . ($rowNumber - 1) . '@example.com';
                 $username = !empty($data['email']) ? strtolower(trim(explode('@', $data['email'])[0])) : 'no-username-' . time() . '-' . ($rowNumber - 1);
