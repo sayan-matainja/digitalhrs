@@ -49,6 +49,65 @@
             white-space: nowrap;
             font-size: 0.85rem;
         }
+
+        /* CSV Upload Loader Styles */
+        .csv-upload-loader {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            min-width: 320px;
+            text-align: center;
+        }
+
+        .csv-loader-content {
+            color: #333;
+        }
+
+        .csv-loader-circle {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: csv-spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes csv-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .csv-loader-message {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .csv-loader-submessage {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 0;
+        }
+
+        .csv-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 9998;
+        }
     </style>
 
     <section class="content">
@@ -452,6 +511,16 @@
         </div>
     </div>
 
+    <!-- CSV Upload Loader -->
+    <div class="csv-backdrop" id="csvBackdrop"></div>
+    <div class="csv-upload-loader" id="csvUploadLoader">
+        <div class="csv-loader-content">
+            <div class="csv-loader-circle"></div>
+            <div class="csv-loader-message">Uploading CSV File...</div>
+            <div class="csv-loader-submessage">Please wait while we process your data</div>
+        </div>
+    </div>
+
     @if(session('upload_errors'))
         <script>
             // Auto open modal if there were upload errors
@@ -599,6 +668,16 @@
                 })
                 .appendTo('#employeeFilterForm');
             $('#employeeFilterForm').submit();
+        });
+
+        // CSV Upload Loader
+        $('#bulkUploadModal form').on('submit', function(e) {
+            // Show backdrop and compact loader when form is submitted
+            $('#csvBackdrop').css('display', 'block');
+            $('#csvUploadLoader').css('display', 'block');
+
+            // Hide modal
+            $('#bulkUploadModal').modal('hide');
         });
     </script>
 @endsection
