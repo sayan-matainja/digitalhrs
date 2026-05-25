@@ -163,7 +163,7 @@ class OfficeTimeController extends Controller
             }
 
             if(strtotime($validatedData['opening_time']) != strtotime($officeTime->opening_time) || strtotime($validatedData['closing_time']) != strtotime( $officeTime->closing_time)){
-                $officeTimeCheck = $this->officeTimeRepo->validateTime($validatedData['opening_time'],$validatedData['closing_time']);
+                $officeTimeCheck = $this->officeTimeRepo->validateTime($validatedData['opening_time'],$validatedData['closing_time'], $validatedData['branch_id']);
                 if($officeTimeCheck){
                     return redirect()->back()
                         ->with('danger',

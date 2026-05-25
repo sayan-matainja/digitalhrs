@@ -36,27 +36,31 @@ class HalfDayMarkValidation implements Rule
         $halfdayTimeC = Carbon::createFromFormat('H:i', $value);
 
         $isNight = $this->shiftType === ShiftTypeEnum::night->value;
-        $isWrap = $isNight && $closingTimeC->lt($openingTimeC);
+        $isWrap = $closingTimeC->lt($openingTimeC); // Any overnight shift (not just night)
+        $isFullDay = $openingTimeC->eq($closingTimeC); // 24-hour shift detection
 
         $openingC = Carbon::parse('2000-01-01 ' . $this->openingTime);
-        $closingC = $isWrap
-            ? Carbon::parse('2000-01-02 ' . $this->closingTime)
-            : Carbon::parse('2000-01-01 ' . $this->closingTime);
 
-        $halfdayC = ($isWrap && $halfdayTimeC->lt($openingTimeC))
+        // Handle 24-hour shifts (opening == closing)
+        if ($isFullDay) {
+            $closingC = Carbon::parse('2000-01-02 ' . $this->closingTime); // Next day
+        } else {
+            $closingC = $isWrap
+                ? Carbon::parse('2000-01-02 ' . $this->closingTime)
+                : Carbon::parse('2000-01-01 ' . $this->closingTime);
+        }
+
+        $halfdayC = ($isWrap && $halfdayTimeC->lt($openingTimeC)) || ($isFullDay && $halfdayTimeC->lt($openingTimeC))
             ? Carbon::parse('2000-01-02 ' . $value)
             : Carbon::parse('2000-01-01 ' . $value);
-
 
         if (! $halfdayC->between($openingC, $closingC)) {
             return false;
         }
 
-
         $duration = $closingC->diffInMinutes($openingC);
         $midMinutes = $duration / 2;
         $midpointC = $openingC->copy()->addMinutes($midMinutes);
-
 
         $diffMinutes = abs($halfdayC->diffInMinutes($midpointC));
 

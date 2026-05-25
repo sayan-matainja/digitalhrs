@@ -35,12 +35,15 @@ class NightShiftValidation implements Rule
         $opening = Carbon::createFromFormat('H:i', $this->openingTime);
         $closing = Carbon::createFromFormat('H:i', $value);
 
-        if ($this->shiftType === ShiftTypeEnum::night->value) {
+        // Check if this is an overnight shift (closing time is earlier than opening time)
+        $isOvernight = $closing->lt($opening);
 
+        if ($this->shiftType === ShiftTypeEnum::night->value) {
+            // Night shifts can be overnight or same day
             return $closing->greaterThan($opening) || $closing->lt($opening->copy()->addDay());
         } else {
-
-            return $closing->greaterThan($opening);
+            // For non-night shifts: allow equal times (24-hour), same-day shifts, or overnight shifts
+            return $closing->greaterThanOrEqualTo($opening) || $isOvernight;
         }
     }
 
