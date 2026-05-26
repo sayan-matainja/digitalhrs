@@ -184,6 +184,7 @@
         </table>
 
     </div>
+    @if($payrollData->attendance == 1)
     <div class="attendance-info">
         <table>
             @if($payrollData->salary_cycle == 'weekly')
@@ -222,6 +223,7 @@
         </table>
 
     </div>
+    @endif
     <!-- Tables for Earnings and Deductions -->
     <div class="tables-wrapper">
         <!-- Table for Earnings -->
@@ -377,6 +379,7 @@
             <tr>
 
             </tr>
+            @if($payrollData->attendance == 1)
             <tr>
                 <th>{{ __('index.absent_deduction') }}<span style="font-weight: normal">
                             @if($payrollData->salary_cycle == 'monthly')
@@ -390,6 +393,7 @@
                     {{ $payrollData->absent_deduction ?? 0 }}
                 </th>
             </tr>
+            @endif
             @if(isset($payrollData->ot_status) && $payrollData->ot_status  == 1)
 
                 <tr>

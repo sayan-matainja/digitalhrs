@@ -57,6 +57,7 @@ class PayslipResource extends JsonResource
             "employee_code" => $this->employee_code,
             'pf_deduction'=>$this->pf_deduction,
             'ssf_deduction'=>$this->ssf_deduction,
+            'attendance'=>$this->attendance,
         ];
 
     }
