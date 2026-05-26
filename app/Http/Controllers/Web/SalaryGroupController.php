@@ -170,6 +170,10 @@ class SalaryGroupController extends Controller
         } catch (Exception $exception) {
             DB::rollBack();
 
+            if (str_contains($exception->getMessage(), 'Integrity constraint violation')) {
+                return redirect()->back()->with('danger', 'Cannot delete - salary group is in use.');
+            }
+
             return redirect()->back()->with('danger', $exception->getMessage());
         }
     }
