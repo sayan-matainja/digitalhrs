@@ -157,14 +157,15 @@ class AdminAuthController extends Controller
 
         $isAdmin = $this->checkAdmin($request);
 
-
         if(!$isAdmin){
-            $customResponse = $this->authenticated($request, Auth::guard('admin')->user());
+            // Use the correct guard for employees
+            $customResponse = $this->authenticated($request, Auth::guard('web')->user());
         }else{
-            $customResponse = $this->authenticated($request, Auth::guard()->user());
+            $customResponse = $this->authenticated($request, Auth::guard('admin')->user());
         }
 
-        $redirectTo = $this->redirectTo;
+        // Both admin and employees go to the same working dashboard
+        $redirectTo = '/admin/dashboard';
 
         return $customResponse ?: redirect()->intended($redirectTo);
     }
