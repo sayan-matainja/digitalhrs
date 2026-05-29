@@ -27,13 +27,13 @@ class UserProfileUpdateApiRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'sometimes|string|max:100|min:2',
-            'email' => ['sometimes', 'email', Rule::unique('users')->ignore(getAuthUserCode())],
-            'address' => 'sometimes|string|max:100',
-            'dob' => 'sometimes|date|date_format:Y-m-d|before:today',
-            'phone' => 'sometimes|numeric',
-            'gender' => ['sometimes', 'string', Rule::in(User::GENDER)],
-            'avatar' => ['sometimes'],
+            'name' => 'nullable|string|max:100|min:2',
+            'email' => ['nullable', 'email', Rule::unique('users')->ignore(getAuthUserCode())],
+            'address' => 'nullable|string|max:100',
+            'dob' => 'nullable|date|date_format:Y-m-d|before:today',
+            'phone' => 'nullable|numeric',
+            'gender' => ['nullable', 'string', Rule::in(User::GENDER)],
+            'avatar' => ['nullable'],
         ];
 
     }
