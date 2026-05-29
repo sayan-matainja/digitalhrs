@@ -229,12 +229,6 @@ class UserRepository
         if (array_key_exists('nin', $validatedData)) {
             $validatedData['nin'] = $validatedData['nin'] ?? '';
         }
-        if (array_key_exists('name', $validatedData)) {
-            $validatedData['name'] = $validatedData['name'] ?? '';
-        }
-        if (array_key_exists('email', $validatedData)) {
-            $validatedData['email'] = $validatedData['email'] ?? '';
-        }
         if (array_key_exists('phone', $validatedData)) {
             $phone = $validatedData['phone'] ?? '';
             // Convert / separator to , for storage (consistent with CSV upload)
@@ -246,9 +240,6 @@ class UserRepository
         }
         if (array_key_exists('address', $validatedData)) {
             $validatedData['address'] = $validatedData['address'] ?? '';
-        }
-        if (array_key_exists('dob', $validatedData)) {
-            $validatedData['dob'] = $validatedData['dob'] ?? null;
         }
         if (array_key_exists('employment_type', $validatedData)) {
             $validatedData['employment_type'] = $validatedData['employment_type'] ?? '';
