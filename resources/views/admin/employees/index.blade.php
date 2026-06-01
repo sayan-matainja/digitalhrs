@@ -430,7 +430,7 @@
                                                     @endcan
                                                     @can('view_card_pdf')
                                                         <li class="dropdown-item py-2">
-                                                            <a href="{{ route('employee.card.view', urlencode($value->employee_code)) }}"
+                                                            <a href="{{ route('employee.card.view') }}?employee_code={{ urlencode($value->employee_code) }}"
                                                                 target="_blank">
                                                                 <button class="btn btn-primary btn-xs">ID Card</button>
                                                             </a>

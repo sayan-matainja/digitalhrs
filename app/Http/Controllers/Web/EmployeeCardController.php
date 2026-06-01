@@ -264,9 +264,13 @@ class EmployeeCardController extends Controller
      * @throws UnknownTypeException
      * @throws Exception
      */
-    public function viewCard($employeeCode)
+    public function viewCard()
     {
-        $employeeCode = urldecode($employeeCode);
+        $employeeCode = request('employee_code');
+        if (!$employeeCode) {
+            abort(404, 'Employee code is required.');
+        }
+
         $employee = $this->userRepo->findByEmployeeCode(
             $employeeCode,
             ['id', 'name', 'avatar', 'employee_code', 'department_id', 'post_id', 'phone', 'email', 'dob', 'joining_date'],
@@ -353,9 +357,13 @@ class EmployeeCardController extends Controller
     /**
      * @throws UnknownTypeException
      */
-    public function downloadCard($employeeCode)
+    public function downloadCard()
     {
-        $employeeCode = urldecode($employeeCode);
+        $employeeCode = request('employee_code');
+        if (!$employeeCode) {
+            abort(404, 'Employee code is required.');
+        }
+
         $employee = $this->userRepo->findByEmployeeCode(
             $employeeCode,
             ['id', 'name', 'avatar', 'employee_code', 'department_id', 'post_id', 'phone', 'email', 'dob', 'joining_date'],
