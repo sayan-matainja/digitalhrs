@@ -266,6 +266,7 @@ class EmployeeCardController extends Controller
      */
     public function viewCard($employeeCode)
     {
+        $employeeCode = urldecode($employeeCode);
         $employee = $this->userRepo->findByEmployeeCode(
             $employeeCode,
             ['id', 'name', 'avatar', 'employee_code', 'department_id', 'post_id', 'phone', 'email', 'dob', 'joining_date'],
@@ -354,6 +355,7 @@ class EmployeeCardController extends Controller
      */
     public function downloadCard($employeeCode)
     {
+        $employeeCode = urldecode($employeeCode);
         $employee = $this->userRepo->findByEmployeeCode(
             $employeeCode,
             ['id', 'name', 'avatar', 'employee_code', 'department_id', 'post_id', 'phone', 'email', 'dob', 'joining_date'],

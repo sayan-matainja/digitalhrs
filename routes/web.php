@@ -759,8 +759,11 @@ Route::group([
 Route::get('emi-calculator', [EmiCalculatorController::class, 'emiCalculator'])->name('emi-calculator');
 
 Route::get('employee/card/{employeeCode}', [EmployeeCardController::class, 'viewCard'])
+    ->where('employeeCode', '.*')
     ->name('employee.card.view');
-Route::get('employee/card/{employeeCode}/download', [EmployeeCardController::class, 'downloadCard'])->name('employee.card.download');
+Route::get('employee/card/{employeeCode}/download', [EmployeeCardController::class, 'downloadCard'])
+    ->where('employeeCode', '.*')
+    ->name('employee.card.download');
 
 Route::fallback(function() {
     return view('errors.404');
