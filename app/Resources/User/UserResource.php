@@ -46,7 +46,8 @@ class UserResource extends JsonResource
             'bank_account_no' =>  !is_null($this?->accountDetail?->bank_account_no) ? ($this?->accountDetail?->bank_account_no):'N/A',
             'bank_account_type' => !is_null($this?->accountDetail?->bank_account_type) ? removeSpecialChars($this?->accountDetail?->bank_account_type):'N/A',
 //            'card_html' => $this->cardHtml,
-            'card_link' =>route('employee.card.view', $this->employee_code),
+            // 'card_link' =>route('employee.card.view', $this->employee_code),
+            'card_link' =>route('employee.card.view') . '?employee_code=' . urlencode($this->employee_code),
         ];
     }
 }
