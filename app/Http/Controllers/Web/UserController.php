@@ -88,7 +88,7 @@ class UserController extends Controller
             $company = $this->companyRepo->getCompanyDetail(['id']);
             $branches = $this->branchRepository->getLoggedInUserCompanyBranches($company->id, ['id', 'name']);
 
-            if ($request->input('action') == 'export') {
+            if ($request->input('action') === 'export') {
                 $fileName = 'employees_' . date('Y-m-d_His') . '.csv';
                 return \Maatwebsite\Excel\Facades\Excel::download(new UserExport($users), $fileName);
             }

@@ -217,7 +217,7 @@
                     {{-- ACTION BUTTONS ✅--}}
                     <div class="col-12 mb-4">
                         <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <button type="submit" name="action" value="filter" class="btn btn-success">
+                            <button type="submit" name="action" value="filter" class="btn btn-success" onclick="clearExportAction()">
                                 {{ __('index.filter') }}
                             </button>
                             @can('create_employee')
@@ -655,6 +655,11 @@
         //     form.submit();
         //     actionInput.remove();
         // });
+
+        // Function to clear export action inputs
+        function clearExportAction() {
+            $('#employeeFilterForm input[name="action"][value="export"]').remove();
+        }
 
         // Export CSV button
         $('#export_employee').on('click', function() {
